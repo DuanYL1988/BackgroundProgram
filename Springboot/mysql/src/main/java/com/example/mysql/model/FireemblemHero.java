@@ -3,7 +3,7 @@ package com.example.mysql.model;
 import lombok.Data;
 
 @Data
-public class FireemblemHero{
+public class FireemblemHero {
     /** 主键ID */
     private String id;
 
@@ -114,4 +114,6 @@ public class FireemblemHero{
 
     /** 登录日期 */
     private String releaseDate;
+
+
 }

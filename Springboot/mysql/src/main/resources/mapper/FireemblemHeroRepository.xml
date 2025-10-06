@@ -141,6 +141,15 @@
             <if test="name!=null and name!=''">
                 AND NAME = #{name}
             </if>
+            <if test="nameCn!=null and nameCn!=''">
+                AND NAME_CN = #{nameCn}
+            </if>
+            <if test="nameJp!=null and nameJp!=''">
+                AND NAME_JP = #{nameJp}
+            </if>
+            <if test="imgName!=null and imgName!=''">
+                AND IMG_NAME = #{imgName}
+            </if>
             <if test="rarity!=null and rarity!=''">
                 AND RARITY = #{rarity}
             </if>
@@ -193,6 +202,15 @@
             1 = 1
             <if test="name!=null and name!=''">
                 AND NAME = #{name}
+            </if>
+            <if test="nameCn!=null and nameCn!=''">
+                AND NAME_CN = #{nameCn}
+            </if>
+            <if test="nameJp!=null and nameJp!=''">
+                AND NAME_JP = #{nameJp}
+            </if>
+            <if test="imgName!=null and imgName!=''">
+                AND IMG_NAME = #{imgName}
             </if>
             <if test="rarity!=null and rarity!=''">
                 AND RARITY = #{rarity}

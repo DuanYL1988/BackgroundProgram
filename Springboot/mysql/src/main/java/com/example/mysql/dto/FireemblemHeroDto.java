@@ -114,4 +114,6 @@ public class FireemblemHeroDto extends ExpandCondition {
 
     /** 登录日期 */
     private String releaseDate;
+
+
 }
