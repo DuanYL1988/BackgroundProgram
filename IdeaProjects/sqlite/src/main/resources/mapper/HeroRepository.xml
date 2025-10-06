@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.sqlite.repository.HeroRepository" >
+  <!-- ResultMap -->
+  <resultMap id="HeroResultMap" type="com.example.sqlite.model.Hero" >
+    <result column="ID" property="id" jdbcType="INTEGER" />
+    <result column="MASTER_ID" property="masterId" jdbcType="INTEGER" />
+    <result column="TITLE_NAME" property="titleName" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+    <result column="IMG_NAME" property="imgName" jdbcType="VARCHAR" />
+    <result column="FACE_IMG_URL" property="faceImgUrl" jdbcType="VARCHAR" />
+    <result column="NORMAL_IMG_URL" property="normalImgUrl" jdbcType="VARCHAR" />
+    <result column="ATTACT_IMG_URL" property="attactImgUrl" jdbcType="VARCHAR" />
+    <result column="EXTRA_IMG_URL" property="extraImgUrl" jdbcType="VARCHAR" />
+    <result column="BREAK_IMG_URL" property="breakImgUrl" jdbcType="VARCHAR" />
+    <result column="ORIGIN" property="origin" jdbcType="VARCHAR" />
+    <result column="HP" property="hp" jdbcType="INTEGER" />
+    <result column="ATTACT" property="attact" jdbcType="INTEGER" />
+    <result column="SPEED" property="speed" jdbcType="INTEGER" />
+    <result column="DEF" property="def" jdbcType="INTEGER" />
+    <result column="MDF" property="mdf" jdbcType="INTEGER" />
+    <result column="WEAPON" property="weapon" jdbcType="VARCHAR" />
+    <result column="SKILL_A" property="skillA" jdbcType="VARCHAR" />
+    <result column="SKILL_B" property="skillB" jdbcType="VARCHAR" />
+    <result column="SKILL_C" property="skillC" jdbcType="VARCHAR" />
+    <result column="SKILL_D" property="skillD" jdbcType="VARCHAR" />
+    <result column="SKILL_S" property="skillS" jdbcType="VARCHAR" />
+    <result column="SKILL_E" property="skillE" jdbcType="VARCHAR" />
+    <result column="LIMIT_PLUS" property="limitPlus" jdbcType="INTEGER" />
+    <result column="DRAGON_FLOWER" property="dragonFlower" jdbcType="INTEGER" />
+    <result column="SUPPORT_MATE" property="supportMate" jdbcType="INTEGER" />
+    <result column="BLESSING" property="blessing" jdbcType="VARCHAR" />
+    <result column="MOVE_TYPE" property="moveType" jdbcType="VARCHAR" />
+    <result column="WEAPON_TYPE" property="weaponType" jdbcType="VARCHAR" />
+    <result column="COLOR" property="color" jdbcType="VARCHAR" />
+    <result column="RACE" property="race" jdbcType="VARCHAR" />
+    <result column="HERO_TYPE" property="heroType" jdbcType="VARCHAR" />
+    <result column="TEAM" property="team" jdbcType="INTEGER" />
+    <result column="SKILL_POINT" property="skillPoint" jdbcType="INTEGER" />
+    <result column="HERO_POINT" property="heroPoint" jdbcType="INTEGER" />
+    <result column="SPEC_TAG" property="specTag" jdbcType="VARCHAR" />
+    <result column="FAVORITE" property="favorite" jdbcType="VARCHAR" />
+    <result column="RANK" property="rank" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="select_column_list">
+    `ID`
+    ,`MASTER_ID`
+    ,`TITLE_NAME`
+    ,`NAME`
+    ,`NICK_NAME`
+    ,`IMG_NAME`
+    ,`FACE_IMG_URL`
+    ,`NORMAL_IMG_URL`
+    ,`ATTACT_IMG_URL`
+    ,`EXTRA_IMG_URL`
+    ,`BREAK_IMG_URL`
+    ,`ORIGIN`
+    ,`HP`
+    ,`ATTACT`
+    ,`SPEED`
+    ,`DEF`
+    ,`MDF`
+    ,`WEAPON`
+    ,`SKILL_A`
+    ,`SKILL_B`
+    ,`SKILL_C`
+    ,`SKILL_D`
+    ,`SKILL_S`
+    ,`SKILL_E`
+    ,`LIMIT_PLUS`
+    ,`DRAGON_FLOWER`
+    ,`SUPPORT_MATE`
+    ,`BLESSING`
+    ,`MOVE_TYPE`
+    ,`WEAPON_TYPE`
+    ,`COLOR`
+    ,`RACE`
+    ,`HERO_TYPE`
+    ,`TEAM`
+    ,`SKILL_POINT`
+    ,`HERO_POINT`
+    ,`SPEC_TAG`
+    ,`FAVORITE`
+    ,`RANK`
+    ,`CREATE_DATETIME`
+    ,`UPDATE_DATETIME`
+  </sql>
+
+  <sql id="insert_column_list">
+    `ID`
+    ,`MASTER_ID`
+    ,`TITLE_NAME`
+    ,`NAME`
+    ,`NICK_NAME`
+    ,`IMG_NAME`
+    ,`FACE_IMG_URL`
+    ,`NORMAL_IMG_URL`
+    ,`ATTACT_IMG_URL`
+    ,`EXTRA_IMG_URL`
+    ,`BREAK_IMG_URL`
+    ,`ORIGIN`
+    ,`HP`
+    ,`ATTACT`
+    ,`SPEED`
+    ,`DEF`
+    ,`MDF`
+    ,`WEAPON`
+    ,`SKILL_A`
+    ,`SKILL_B`
+    ,`SKILL_C`
+    ,`SKILL_D`
+    ,`SKILL_S`
+    ,`SKILL_E`
+    ,`LIMIT_PLUS`
+    ,`DRAGON_FLOWER`
+    ,`SUPPORT_MATE`
+    ,`BLESSING`
+    ,`MOVE_TYPE`
+    ,`WEAPON_TYPE`
+    ,`COLOR`
+    ,`RACE`
+    ,`HERO_TYPE`
+    ,`TEAM`
+    ,`SKILL_POINT`
+    ,`HERO_POINT`
+    ,`SPEC_TAG`
+    ,`FAVORITE`
+    ,`RANK`
+    ,`CREATE_DATETIME`
+    ,`UPDATE_DATETIME`
+  </sql>
+
+  <select id="selectOneById" resultMap="HeroResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      HERO
+    WHERE
+      ID = #{id}
+  </select>
+
+  <select id="getCountByDto" parameterType="com.example.sqlite.model.Hero" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM HERO
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="masterId!=null and masterId!=''">
+        AND MASTER_ID = #{masterId}
+      </if>
+      <if test="titleName!=null and titleName!=''">
+        AND TITLE_NAME = #{titleName}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="nickName!=null and nickName!=''">
+        AND NICK_NAME = #{nickName}
+      </if>
+      <if test="imgName!=null and imgName!=''">
+        AND IMG_NAME = #{imgName}
+      </if>
+      <if test="faceImgUrl!=null and faceImgUrl!=''">
+        AND FACE_IMG_URL = #{faceImgUrl}
+      </if>
+      <if test="normalImgUrl!=null and normalImgUrl!=''">
+        AND NORMAL_IMG_URL = #{normalImgUrl}
+      </if>
+      <if test="attactImgUrl!=null and attactImgUrl!=''">
+        AND ATTACT_IMG_URL = #{attactImgUrl}
+      </if>
+      <if test="extraImgUrl!=null and extraImgUrl!=''">
+        AND EXTRA_IMG_URL = #{extraImgUrl}
+      </if>
+      <if test="breakImgUrl!=null and breakImgUrl!=''">
+        AND BREAK_IMG_URL = #{breakImgUrl}
+      </if>
+      <if test="origin!=null and origin!=''">
+        AND ORIGIN = #{origin}
+      </if>
+      <if test="hp!=null and hp!=''">
+        AND HP = #{hp}
+      </if>
+      <if test="attact!=null and attact!=''">
+        AND ATTACT = #{attact}
+      </if>
+      <if test="speed!=null and speed!=''">
+        AND SPEED = #{speed}
+      </if>
+      <if test="def!=null and def!=''">
+        AND DEF = #{def}
+      </if>
+      <if test="mdf!=null and mdf!=''">
+        AND MDF = #{mdf}
+      </if>
+      <if test="weapon!=null and weapon!=''">
+        AND WEAPON = #{weapon}
+      </if>
+      <if test="skillA!=null and skillA!=''">
+        AND SKILL_A = #{skillA}
+      </if>
+      <if test="skillB!=null and skillB!=''">
+        AND SKILL_B = #{skillB}
+      </if>
+      <if test="skillC!=null and skillC!=''">
+        AND SKILL_C = #{skillC}
+      </if>
+      <if test="skillD!=null and skillD!=''">
+        AND SKILL_D = #{skillD}
+      </if>
+      <if test="skillS!=null and skillS!=''">
+        AND SKILL_S = #{skillS}
+      </if>
+      <if test="skillE!=null and skillE!=''">
+        AND SKILL_E = #{skillE}
+      </if>
+      <if test="limitPlus!=null and limitPlus!=''">
+        AND LIMIT_PLUS = #{limitPlus}
+      </if>
+      <if test="dragonFlower!=null and dragonFlower!=''">
+        AND DRAGON_FLOWER = #{dragonFlower}
+      </if>
+      <if test="supportMate!=null and supportMate!=''">
+        AND SUPPORT_MATE = #{supportMate}
+      </if>
+      <if test="blessing!=null and blessing!=''">
+        AND BLESSING = #{blessing}
+      </if>
+      <if test="moveType!=null and moveType!=''">
+        AND MOVE_TYPE = #{moveType}
+      </if>
+      <if test="weaponType!=null and weaponType!=''">
+        AND WEAPON_TYPE = #{weaponType}
+      </if>
+      <if test="color!=null and color!=''">
+        AND COLOR = #{color}
+      </if>
+      <if test="race!=null and race!=''">
+        AND RACE = #{race}
+      </if>
+      <if test="heroType!=null and heroType!=''">
+        AND HERO_TYPE = #{heroType}
+      </if>
+      <if test="team!=null and team!=''">
+        AND TEAM = #{team}
+      </if>
+      <if test="skillPoint!=null and skillPoint!=''">
+        AND SKILL_POINT = #{skillPoint}
+      </if>
+      <if test="heroPoint!=null and heroPoint!=''">
+        AND HERO_POINT = #{heroPoint}
+      </if>
+      <if test="specTag!=null and specTag!=''">
+        AND SPEC_TAG = #{specTag}
+      </if>
+      <if test="favorite!=null and favorite!=''">
+        AND FAVORITE = #{favorite}
+      </if>
+      <if test="rank!=null and rank!=''">
+        AND RANK = #{rank}
+      </if>
+      <if test="createDatetime!=null and createDatetime!=''">
+        AND CREATE_DATETIME = #{createDatetime}
+      </if>
+      <if test="updateDatetime!=null and updateDatetime!=''">
+        AND UPDATE_DATETIME = #{updateDatetime}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByDto" parameterType="com.example.sqlite.model.Hero" resultMap="HeroResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      HERO
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="masterId!=null and masterId!=''">
+        AND MASTER_ID = #{masterId}
+      </if>
+      <if test="titleName!=null and titleName!=''">
+        AND TITLE_NAME = #{titleName}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="nickName!=null and nickName!=''">
+        AND NICK_NAME = #{nickName}
+      </if>
+      <if test="imgName!=null and imgName!=''">
+        AND IMG_NAME = #{imgName}
+      </if>
+      <if test="faceImgUrl!=null and faceImgUrl!=''">
+        AND FACE_IMG_URL = #{faceImgUrl}
+      </if>
+      <if test="normalImgUrl!=null and normalImgUrl!=''">
+        AND NORMAL_IMG_URL = #{normalImgUrl}
+      </if>
+      <if test="attactImgUrl!=null and attactImgUrl!=''">
+        AND ATTACT_IMG_URL = #{attactImgUrl}
+      </if>
+      <if test="extraImgUrl!=null and extraImgUrl!=''">
+        AND EXTRA_IMG_URL = #{extraImgUrl}
+      </if>
+      <if test="breakImgUrl!=null and breakImgUrl!=''">
+        AND BREAK_IMG_URL = #{breakImgUrl}
+      </if>
+      <if test="origin!=null and origin!=''">
+        AND ORIGIN = #{origin}
+      </if>
+      <if test="hp!=null and hp!=''">
+        AND HP = #{hp}
+      </if>
+      <if test="attact!=null and attact!=''">
+        AND ATTACT = #{attact}
+      </if>
+      <if test="speed!=null and speed!=''">
+        AND SPEED = #{speed}
+      </if>
+      <if test="def!=null and def!=''">
+        AND DEF = #{def}
+      </if>
+      <if test="mdf!=null and mdf!=''">
+        AND MDF = #{mdf}
+      </if>
+      <if test="weapon!=null and weapon!=''">
+        AND WEAPON = #{weapon}
+      </if>
+      <if test="skillA!=null and skillA!=''">
+        AND SKILL_A = #{skillA}
+      </if>
+      <if test="skillB!=null and skillB!=''">
+        AND SKILL_B = #{skillB}
+      </if>
+      <if test="skillC!=null and skillC!=''">
+        AND SKILL_C = #{skillC}
+      </if>
+      <if test="skillD!=null and skillD!=''">
+        AND SKILL_D = #{skillD}
+      </if>
+      <if test="skillS!=null and skillS!=''">
+        AND SKILL_S = #{skillS}
+      </if>
+      <if test="skillE!=null and skillE!=''">
+        AND SKILL_E = #{skillE}
+      </if>
+      <if test="limitPlus!=null and limitPlus!=''">
+        AND LIMIT_PLUS = #{limitPlus}
+      </if>
+      <if test="dragonFlower!=null and dragonFlower!=''">
+        AND DRAGON_FLOWER = #{dragonFlower}
+      </if>
+      <if test="supportMate!=null and supportMate!=''">
+        AND SUPPORT_MATE = #{supportMate}
+      </if>
+      <if test="blessing!=null and blessing!=''">
+        AND BLESSING = #{blessing}
+      </if>
+      <if test="moveType!=null and moveType!=''">
+        AND MOVE_TYPE = #{moveType}
+      </if>
+      <if test="weaponType!=null and weaponType!=''">
+        AND WEAPON_TYPE = #{weaponType}
+      </if>
+      <if test="color!=null and color!=''">
+        AND COLOR = #{color}
+      </if>
+      <if test="race!=null and race!=''">
+        AND RACE = #{race}
+      </if>
+      <if test="heroType!=null and heroType!=''">
+        AND HERO_TYPE = #{heroType}
+      </if>
+      <if test="team!=null and team!=''">
+        AND TEAM = #{team}
+      </if>
+      <if test="skillPoint!=null and skillPoint!=''">
+        AND SKILL_POINT = #{skillPoint}
+      </if>
+      <if test="heroPoint!=null and heroPoint!=''">
+        AND HERO_POINT = #{heroPoint}
+      </if>
+      <if test="specTag!=null and specTag!=''">
+        AND SPEC_TAG = #{specTag}
+      </if>
+      <if test="favorite!=null and favorite!=''">
+        AND FAVORITE = #{favorite}
+      </if>
+      <if test="rank!=null and rank!=''">
+        AND RANK = #{rank}
+      </if>
+      <if test="createDatetime!=null and createDatetime!=''">
+        AND CREATE_DATETIME = #{createDatetime}
+      </if>
+      <if test="updateDatetime!=null and updateDatetime!=''">
+        AND UPDATE_DATETIME = #{updateDatetime}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+      LIMIT ${startRow} , ${pageSize}
+  </select>
+
+  <insert id="insert" parameterType="com.example.sqlite.model.Hero" >
+    INSERT INTO HERO(
+    <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+    <include refid="insert_column_list"></include>
+    ) VALUES (
+       #{id}
+      , #{masterId}
+      , #{titleName}
+      , #{name}
+      , #{nickName}
+      , #{imgName}
+      , #{faceImgUrl}
+      , #{normalImgUrl}
+      , #{attactImgUrl}
+      , #{extraImgUrl}
+      , #{breakImgUrl}
+      , #{origin}
+      , #{hp}
+      , #{attact}
+      , #{speed}
+      , #{def}
+      , #{mdf}
+      , #{weapon}
+      , #{skillA}
+      , #{skillB}
+      , #{skillC}
+      , #{skillD}
+      , #{skillS}
+      , #{skillE}
+      , #{limitPlus}
+      , #{dragonFlower}
+      , #{supportMate}
+      , #{blessing}
+      , #{moveType}
+      , #{weaponType}
+      , #{color}
+      , #{race}
+      , #{heroType}
+      , #{team}
+      , #{skillPoint}
+      , #{heroPoint}
+      , #{specTag}
+      , #{favorite}
+      , #{rank}
+      , #{createDatetime}
+      , #{updateDatetime}
+    )
+  </insert>
+
+  <delete id="delete">
+    DELETE FROM HERO WHERE ID = #{id}
+  </delete>
+
+  <update id="update" parameterType="com.example.sqlite.model.Hero" >
+    UPDATE
+      HERO
+    <set>
+      <if test="id!=null and id!=''">
+        ID = #{id},
+      </if>
+      <if test="masterId!=null and masterId!=''">
+        MASTER_ID = #{masterId},
+      </if>
+      <if test="titleName!=null and titleName!=''">
+        TITLE_NAME = #{titleName},
+      </if>
+      <if test="name!=null and name!=''">
+        NAME = #{name},
+      </if>
+      <if test="nickName!=null and nickName!=''">
+        NICK_NAME = #{nickName},
+      </if>
+      <if test="imgName!=null and imgName!=''">
+        IMG_NAME = #{imgName},
+      </if>
+      <if test="faceImgUrl!=null and faceImgUrl!=''">
+        FACE_IMG_URL = #{faceImgUrl},
+      </if>
+      <if test="normalImgUrl!=null and normalImgUrl!=''">
+        NORMAL_IMG_URL = #{normalImgUrl},
+      </if>
+      <if test="attactImgUrl!=null and attactImgUrl!=''">
+        ATTACT_IMG_URL = #{attactImgUrl},
+      </if>
+      <if test="extraImgUrl!=null and extraImgUrl!=''">
+        EXTRA_IMG_URL = #{extraImgUrl},
+      </if>
+      <if test="breakImgUrl!=null and breakImgUrl!=''">
+        BREAK_IMG_URL = #{breakImgUrl},
+      </if>
+      <if test="origin!=null and origin!=''">
+        ORIGIN = #{origin},
+      </if>
+      <if test="hp!=null and hp!=''">
+        HP = #{hp},
+      </if>
+      <if test="attact!=null and attact!=''">
+        ATTACT = #{attact},
+      </if>
+      <if test="speed!=null and speed!=''">
+        SPEED = #{speed},
+      </if>
+      <if test="def!=null and def!=''">
+        DEF = #{def},
+      </if>
+      <if test="mdf!=null and mdf!=''">
+        MDF = #{mdf},
+      </if>
+      <if test="weapon!=null and weapon!=''">
+        WEAPON = #{weapon},
+      </if>
+      <if test="skillA!=null and skillA!=''">
+        SKILL_A = #{skillA},
+      </if>
+      <if test="skillB!=null and skillB!=''">
+        SKILL_B = #{skillB},
+      </if>
+      <if test="skillC!=null and skillC!=''">
+        SKILL_C = #{skillC},
+      </if>
+      <if test="skillD!=null and skillD!=''">
+        SKILL_D = #{skillD},
+      </if>
+      <if test="skillS!=null and skillS!=''">
+        SKILL_S = #{skillS},
+      </if>
+      <if test="skillE!=null and skillE!=''">
+        SKILL_E = #{skillE},
+      </if>
+      <if test="limitPlus!=null and limitPlus!=''">
+        LIMIT_PLUS = #{limitPlus},
+      </if>
+      <if test="dragonFlower!=null and dragonFlower!=''">
+        DRAGON_FLOWER = #{dragonFlower},
+      </if>
+      <if test="supportMate!=null and supportMate!=''">
+        SUPPORT_MATE = #{supportMate},
+      </if>
+      <if test="blessing!=null and blessing!=''">
+        BLESSING = #{blessing},
+      </if>
+      <if test="moveType!=null and moveType!=''">
+        MOVE_TYPE = #{moveType},
+      </if>
+      <if test="weaponType!=null and weaponType!=''">
+        WEAPON_TYPE = #{weaponType},
+      </if>
+      <if test="color!=null and color!=''">
+        COLOR = #{color},
+      </if>
+      <if test="race!=null and race!=''">
+        RACE = #{race},
+      </if>
+      <if test="heroType!=null and heroType!=''">
+        HERO_TYPE = #{heroType},
+      </if>
+      <if test="team!=null and team!=''">
+        TEAM = #{team},
+      </if>
+      <if test="skillPoint!=null and skillPoint!=''">
+        SKILL_POINT = #{skillPoint},
+      </if>
+      <if test="heroPoint!=null and heroPoint!=''">
+        HERO_POINT = #{heroPoint},
+      </if>
+      <if test="specTag!=null and specTag!=''">
+        SPEC_TAG = #{specTag},
+      </if>
+      <if test="favorite!=null and favorite!=''">
+        FAVORITE = #{favorite},
+      </if>
+      <if test="rank!=null and rank!=''">
+        RANK = #{rank},
+      </if>
+      <if test="createDatetime!=null and createDatetime!=''">
+        CREATE_DATETIME = #{createDatetime},
+      </if>
+      <if test="updateDatetime!=null and updateDatetime!=''">
+        UPDATE_DATETIME = #{updateDatetime},
+      </if>
+    </set>
+    WHERE
+      ID = #{id}
+  </update>
+
+  <select id="selectOneByUniqueKey" resultMap="HeroResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      HERO
+    <where>
+      <if test="titleName!=null and titleName!=''">
+        AND TITLE_NAME = #{titleName}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+    </where>
+  </select>
+
+  <select id="customQuary" parameterType="com.example.sqlite.model.Hero" resultType="com.example.sqlite.model.Hero">
+    SELECT
+       ${selectQuary}
+    FROM
+      HERO
+    <if test="joinPart!=null">
+        ${joinPart}
+    </if>
+    <where>
+        1 = 1
+        <if test="condition!=null">
+         AND ${condition}
+        </if>
+    </where>
+    <if test="groupBy!=null">
+      GROUP BY ${groupBy}
+    </if>
+    <if test="having!=null">
+      HAVING ${having}
+    </if>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+  </select>
+
+</mapper>
+

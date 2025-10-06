@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.mysql.repository.TableInfoRepository" >
+    <!-- ResultMap -->
+    <resultMap id="TableInfoResultMap" type="com.example.mysql.model.TableInfo" >
+        <result column="TABLE_NAME" property= "tableName" jdbcType= "VARCHAR"/>
+        <result column="COL_NAME" property= "colName" jdbcType= "VARCHAR"/>
+        <result column="COL_NAME_CH" property= "colNameCh" jdbcType= "VARCHAR"/>
+        <result column="COL_CAMEL" property= "colCamel" jdbcType= "VARCHAR"/>
+        <result column="COL_TYPE" property= "colType" jdbcType= "VARCHAR"/>
+        <result column="COL_LENGTH" property= "colLength" jdbcType= "VARCHAR"/>
+        <result column="COL_PK_FLG" property= "colPkFlg" jdbcType= "VARCHAR"/>
+        <result column="COL_NOTNULL_FLG" property= "colNotnullFlg" jdbcType= "VARCHAR"/>
+        <result column="COL_UNIQUE_FLG" property= "colUniqueFlg" jdbcType= "VARCHAR"/>
+        <result column="COL_INPUTTYPE" property= "colInputtype" jdbcType= "VARCHAR"/>
+        <result column="COL_INSERTABLE" property= "colInsertable" jdbcType= "VARCHAR"/>
+        <result column="COL_UPDATEABLE" property= "colUpdateable" jdbcType= "VARCHAR"/>
+        <result column="COL_FIFTERABLE" property= "colFifterable" jdbcType= "VARCHAR"/>
+        <result column="COL_DISABLE_FLG" property= "colDisableFlg" jdbcType= "VARCHAR"/>
+        <result column="COL_LIST_DISABLE_FLAG" property= "colListDisableFlag" jdbcType= "VARCHAR"/>
+        <result column="COL_CODE" property= "colCode" jdbcType= "VARCHAR"/>
+        <result column="COL_DEFAULT" property= "colDefault" jdbcType= "VARCHAR"/>
+    </resultMap>
+
+    <!-- 全字段检索 -->
+    <sql id="select_column_list">
+        TABLE_NAME
+        , COL_NAME
+        , COL_NAME_CH
+        , COL_CAMEL
+        , COL_TYPE
+        , COL_LENGTH
+        , COL_PK_FLG
+        , COL_NOTNULL_FLG
+        , COL_UNIQUE_FLG
+        , COL_INPUTTYPE
+        , COL_INSERTABLE
+        , COL_UPDATEABLE
+        , COL_FIFTERABLE
+        , COL_DISABLE_FLG
+        , COL_LIST_DISABLE_FLAG
+        , COL_CODE
+        , COL_DEFAULT
+    </sql>
+
+    <!-- 插入数据字段 -->
+    <sql id="insert_column_list">
+        TABLE_NAME
+        , COL_NAME
+        , COL_NAME_CH
+        , COL_CAMEL
+        , COL_TYPE
+        , COL_LENGTH
+        , COL_PK_FLG
+        , COL_NOTNULL_FLG
+        , COL_UNIQUE_FLG
+        , COL_INPUTTYPE
+        , COL_INSERTABLE
+        , COL_UPDATEABLE
+        , COL_FIFTERABLE
+        , COL_DISABLE_FLG
+        , COL_LIST_DISABLE_FLAG
+        , COL_CODE
+        , COL_DEFAULT
+    </sql>
+
+    <!-- 根据条件取得件数 -->
+    <select id="getCountByDto" parameterType="com.example.mysql.dto.TableInfoDto" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM TABLE_INFO
+        <where>
+            1 = 1
+            <if test="tableName!=null and tableName!=''">
+                AND TABLE_NAME = #{tableName}
+            </if>
+            <if test="colInputtype!=null and colInputtype!=''">
+                AND COL_INPUTTYPE = #{colInputtype}
+            </if>
+            <if test="colInsertable!=null and colInsertable!=''">
+                AND COL_INSERTABLE = #{colInsertable}
+            </if>
+            <if test="colUpdateable!=null and colUpdateable!=''">
+                AND COL_UPDATEABLE = #{colUpdateable}
+            </if>
+            <if test="colFifterable!=null and colFifterable!=''">
+                AND COL_FIFTERABLE = #{colFifterable}
+            </if>
+            <if test="colDisableFlg!=null and colDisableFlg!=''">
+                AND COL_DISABLE_FLG = #{colDisableFlg}
+            </if>
+            <if test="colListDisableFlag!=null and colListDisableFlag!=''">
+                AND COL_LIST_DISABLE_FLAG = #{colListDisableFlag}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据条件取得一览 -->
+    <select id="selectByDto" parameterType="com.example.mysql.dto.TableInfoDto" resultMap="TableInfoResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM TABLE_INFO
+        <where>
+            1 = 1
+            <if test="tableName!=null and tableName!=''">
+                AND TABLE_NAME = #{tableName}
+            </if>
+            <if test="colInputtype!=null and colInputtype!=''">
+                AND COL_INPUTTYPE = #{colInputtype}
+            </if>
+            <if test="colInsertable!=null and colInsertable!=''">
+                AND COL_INSERTABLE = #{colInsertable}
+            </if>
+            <if test="colUpdateable!=null and colUpdateable!=''">
+                AND COL_UPDATEABLE = #{colUpdateable}
+            </if>
+            <if test="colFifterable!=null and colFifterable!=''">
+                AND COL_FIFTERABLE = #{colFifterable}
+            </if>
+            <if test="colDisableFlg!=null and colDisableFlg!=''">
+                AND COL_DISABLE_FLG = #{colDisableFlg}
+            </if>
+            <if test="colListDisableFlag!=null and colListDisableFlag!=''">
+                AND COL_LIST_DISABLE_FLAG = #{colListDisableFlag}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+        <if test="orderBy!=null">
+            ORDER BY ${orderBy}
+        </if>
+            LIMIT ${startRow} , ${pageSize}
+    </select>
+
+    <!-- 新增一条数据 -->
+    <insert id="insert" parameterType="com.example.mysql.model.TableInfo" >
+        INSERT INTO TABLE_INFO (
+        <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+        <include refid="insert_column_list"></include>
+        ) VALUES (
+        #{tableName}
+        , #{colName}
+        , #{colNameCh}
+        , #{colCamel}
+        , #{colType}
+        , #{colLength}
+        , #{colPkFlg}
+        , #{colNotnullFlg}
+        , #{colUniqueFlg}
+        , #{colInputtype}
+        , #{colInsertable}
+        , #{colUpdateable}
+        , #{colFifterable}
+        , #{colDisableFlg}
+        , #{colListDisableFlag}
+        , #{colCode}
+        , #{colDefault}
+        )
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.example.mysql.model.TableInfo" >
+        UPDATE TABLE_INFO
+        <set>
+        <if test="colNameCh!=null and colNameCh!=''">
+            COL_NAME_CH = #{colNameCh},
+        </if>
+        <if test="colNotnullFlg!=null and colNotnullFlg!=''">
+            COL_NOTNULL_FLG = #{colNotnullFlg},
+        </if>
+        <if test="colUniqueFlg!=null and colUniqueFlg!=''">
+            COL_UNIQUE_FLG = #{colUniqueFlg},
+        </if>
+        <if test="colInputtype!=null and colInputtype!=''">
+            COL_INPUTTYPE = #{colInputtype},
+        </if>
+        <if test="colInsertable!=null and colInsertable!=''">
+            COL_INSERTABLE = #{colInsertable},
+        </if>
+        <if test="colUpdateable!=null and colUpdateable!=''">
+            COL_UPDATEABLE = #{colUpdateable},
+        </if>
+        <if test="colFifterable!=null and colFifterable!=''">
+            COL_FIFTERABLE = #{colFifterable},
+        </if>
+        <if test="colDisableFlg!=null and colDisableFlg!=''">
+            COL_DISABLE_FLG = #{colDisableFlg},
+        </if>
+        <if test="colListDisableFlag!=null and colListDisableFlag!=''">
+            COL_LIST_DISABLE_FLAG = #{colListDisableFlag},
+        </if>
+        <if test="colCode!=null and colCode!=''">
+            COL_CODE = #{colCode},
+        </if>
+        <if test="colDefault!=null and colDefault!=''">
+            COL_DEFAULT = #{colDefault},
+        </if>
+        </set>
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 业务主键查找唯一值 -->
+    <select id="selectOneByUniqueKey" resultMap="TableInfoResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM TABLE_INFO
+        <where>
+            AND TABLE_NAME = #{tableName}
+            AND COL_NAME = #{colName}
+
+        </where>
+    </select>
+
+    <!-- 自定义查找 -->
+    <select id="customQuary" parameterType="com.example.mysql.dto.TableInfoDto" resultType="com.example.mysql.model.TableInfo">
+        SELECT
+             ${selectQuary}
+        FROM TABLE_INFO
+        <if test="joinPart!=null">
+            ${joinPart}
+        </if>
+        <where>
+            1 = 1
+            <if test="condition!=null and condition!=''">
+             AND ${condition}
+            </if>
+        </where>
+        <if test="groupBy!=null and groupBy!=''">
+            GROUP BY ${groupBy}
+        </if>
+        <if test="having!=null and having!=''">
+            HAVING ${having}
+        </if>
+        <if test="orderBy!=null and orderBy!=''">
+            ORDER BY ${orderBy}
+        </if>
+    </select>
+</mapper>

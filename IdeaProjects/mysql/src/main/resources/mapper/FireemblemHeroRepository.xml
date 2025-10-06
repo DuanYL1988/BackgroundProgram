@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.mysql.repository.FireemblemHeroRepository" >
+    <!-- ResultMap -->
+    <resultMap id="FireemblemHeroResultMap" type="com.example.mysql.model.FireemblemHero" >
+        <result column="ID" property= "id" jdbcType= "VARCHAR"/>
+        <result column="TITLE_NAME" property= "titleName" jdbcType= "VARCHAR"/>
+        <result column="NAME" property= "name" jdbcType= "VARCHAR"/>
+        <result column="NAME_CN" property= "nameCn" jdbcType= "VARCHAR"/>
+        <result column="NAME_JP" property= "nameJp" jdbcType= "VARCHAR"/>
+        <result column="IMG_NAME" property= "imgName" jdbcType= "VARCHAR"/>
+        <result column="FACE_IMG" property= "faceImg" jdbcType= "VARCHAR"/>
+        <result column="STAGE_IMG" property= "stageImg" jdbcType= "VARCHAR"/>
+        <result column="CUT_IN_IMG" property= "cutInImg" jdbcType= "VARCHAR"/>
+        <result column="SPRITE_IMG" property= "spriteImg" jdbcType= "VARCHAR"/>
+        <result column="ART_IMG" property= "artImg" jdbcType= "VARCHAR"/>
+        <result column="RARITY" property= "rarity" jdbcType= "VARCHAR"/>
+        <result column="HP" property= "hp" jdbcType= "INTEGER"/>
+        <result column="ATK" property= "atk" jdbcType= "INTEGER"/>
+        <result column="SPD" property= "spd" jdbcType= "INTEGER"/>
+        <result column="DEF" property= "def" jdbcType= "INTEGER"/>
+        <result column="RES" property= "res" jdbcType= "INTEGER"/>
+        <result column="BLESSING" property= "blessing" jdbcType= "VARCHAR"/>
+        <result column="HERO_TYPE" property= "heroType" jdbcType= "VARCHAR"/>
+        <result column="MOVE_TYPE" property= "moveType" jdbcType= "VARCHAR"/>
+        <result column="WEAPON" property= "weapon" jdbcType= "VARCHAR"/>
+        <result column="WEAPON_TYPE" property= "weaponType" jdbcType= "VARCHAR"/>
+        <result column="WEAPON_POWER" property= "weaponPower" jdbcType= "INTEGER"/>
+        <result column="ENTRY" property= "entry" jdbcType= "VARCHAR"/>
+        <result column="COLOR" property= "color" jdbcType= "VARCHAR"/>
+        <result column="RACE" property= "race" jdbcType= "VARCHAR"/>
+        <result column="SKILL_A" property= "skillA" jdbcType= "VARCHAR"/>
+        <result column="SKILL_B" property= "skillB" jdbcType= "VARCHAR"/>
+        <result column="SKILL_C" property= "skillC" jdbcType= "VARCHAR"/>
+        <result column="SKILL_ASS" property= "skillAss" jdbcType= "VARCHAR"/>
+        <result column="SKILL_SP" property= "skillSp" jdbcType= "VARCHAR"/>
+        <result column="LIMIT_PLUS" property= "limitPlus" jdbcType= "INTEGER"/>
+        <result column="DRAGON_FLOWER" property= "dragonFlower" jdbcType= "INTEGER"/>
+        <result column="FAVORITE" property= "favorite" jdbcType= "VARCHAR"/>
+        <result column="HERO_RANK" property= "heroRank" jdbcType= "VARCHAR"/>
+        <result column="PICK_FLAG" property= "pickFlag" jdbcType= "VARCHAR"/>
+        <result column="RELEASE_DATE" property= "releaseDate" jdbcType= "VARCHAR"/>
+    </resultMap>
+
+    <!-- 全字段检索 -->
+    <sql id="select_column_list">
+        ID
+        , TITLE_NAME
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , IMG_NAME
+        , FACE_IMG
+        , STAGE_IMG
+        , CUT_IN_IMG
+        , SPRITE_IMG
+        , ART_IMG
+        , RARITY
+        , HP
+        , ATK
+        , SPD
+        , DEF
+        , RES
+        , BLESSING
+        , HERO_TYPE
+        , MOVE_TYPE
+        , WEAPON
+        , WEAPON_TYPE
+        , WEAPON_POWER
+        , ENTRY
+        , COLOR
+        , RACE
+        , SKILL_A
+        , SKILL_B
+        , SKILL_C
+        , SKILL_ASS
+        , SKILL_SP
+        , LIMIT_PLUS
+        , DRAGON_FLOWER
+        , FAVORITE
+        , HERO_RANK
+        , PICK_FLAG
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 插入数据字段 -->
+    <sql id="insert_column_list">
+        ID
+        , TITLE_NAME
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , IMG_NAME
+        , FACE_IMG
+        , STAGE_IMG
+        , CUT_IN_IMG
+        , SPRITE_IMG
+        , ART_IMG
+        , RARITY
+        , HP
+        , ATK
+        , SPD
+        , DEF
+        , RES
+        , BLESSING
+        , HERO_TYPE
+        , MOVE_TYPE
+        , WEAPON
+        , WEAPON_TYPE
+        , WEAPON_POWER
+        , ENTRY
+        , COLOR
+        , RACE
+        , SKILL_A
+        , SKILL_B
+        , SKILL_C
+        , SKILL_ASS
+        , SKILL_SP
+        , LIMIT_PLUS
+        , DRAGON_FLOWER
+        , FAVORITE
+        , HERO_RANK
+        , PICK_FLAG
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 通过ID查找唯一一条记录 -->
+    <select id="selectOneById" resultMap="FireemblemHeroResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM FIREEMBLEM_HERO
+        WHERE
+            ID = #{id}
+    </select>
+
+    <!-- 根据条件取得件数 -->
+    <select id="getCountByDto" parameterType="com.example.mysql.dto.FireemblemHeroDto" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM FIREEMBLEM_HERO
+        <where>
+            1 = 1
+            <if test="name!=null and name!=''">
+                AND NAME = #{name}
+            </if>
+            <if test="rarity!=null and rarity!=''">
+                AND RARITY = #{rarity}
+            </if>
+            <if test="blessing!=null and blessing!=''">
+                AND BLESSING = #{blessing}
+            </if>
+            <if test="heroType!=null and heroType!=''">
+                AND HERO_TYPE = #{heroType}
+            </if>
+            <if test="moveType!=null and moveType!=''">
+                AND MOVE_TYPE = #{moveType}
+            </if>
+            <if test="weaponType!=null and weaponType!=''">
+                AND WEAPON_TYPE = #{weaponType}
+            </if>
+            <if test="entry!=null and entry!=''">
+                AND ENTRY = #{entry}
+            </if>
+            <if test="color!=null and color!=''">
+                AND COLOR = #{color}
+            </if>
+            <if test="race!=null and race!=''">
+                AND RACE = #{race}
+            </if>
+            <if test="skillA!=null and skillA!=''">
+                AND SKILL_A = #{skillA}
+            </if>
+            <if test="skillB!=null and skillB!=''">
+                AND SKILL_B = #{skillB}
+            </if>
+            <if test="skillC!=null and skillC!=''">
+                AND SKILL_C = #{skillC}
+            </if>
+            <if test="heroRank!=null and heroRank!=''">
+                AND HERO_RANK = #{heroRank}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据条件取得一览 -->
+    <select id="selectByDto" parameterType="com.example.mysql.dto.FireemblemHeroDto" resultMap="FireemblemHeroResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM FIREEMBLEM_HERO
+        <where>
+            1 = 1
+            <if test="name!=null and name!=''">
+                AND NAME = #{name}
+            </if>
+            <if test="rarity!=null and rarity!=''">
+                AND RARITY = #{rarity}
+            </if>
+            <if test="blessing!=null and blessing!=''">
+                AND BLESSING = #{blessing}
+            </if>
+            <if test="heroType!=null and heroType!=''">
+                AND HERO_TYPE = #{heroType}
+            </if>
+            <if test="moveType!=null and moveType!=''">
+                AND MOVE_TYPE = #{moveType}
+            </if>
+            <if test="weaponType!=null and weaponType!=''">
+                AND WEAPON_TYPE = #{weaponType}
+            </if>
+            <if test="entry!=null and entry!=''">
+                AND ENTRY = #{entry}
+            </if>
+            <if test="color!=null and color!=''">
+                AND COLOR = #{color}
+            </if>
+            <if test="race!=null and race!=''">
+                AND RACE = #{race}
+            </if>
+            <if test="skillA!=null and skillA!=''">
+                AND SKILL_A = #{skillA}
+            </if>
+            <if test="skillB!=null and skillB!=''">
+                AND SKILL_B = #{skillB}
+            </if>
+            <if test="skillC!=null and skillC!=''">
+                AND SKILL_C = #{skillC}
+            </if>
+            <if test="heroRank!=null and heroRank!=''">
+                AND HERO_RANK = #{heroRank}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+        <if test="orderBy!=null">
+            ORDER BY ${orderBy}
+        </if>
+            LIMIT ${startRow} , ${pageSize}
+    </select>
+
+    <!-- 新增一条数据 -->
+    <insert id="insert" parameterType="com.example.mysql.model.FireemblemHero" >
+        INSERT INTO FIREEMBLEM_HERO (
+        <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+        <include refid="insert_column_list"></include>
+        ) VALUES (
+        #{id}
+        , #{titleName}
+        , #{name}
+        , #{nameCn}
+        , #{nameJp}
+        , #{imgName}
+        , #{faceImg}
+        , #{stageImg}
+        , #{cutInImg}
+        , #{spriteImg}
+        , #{artImg}
+        , #{rarity}
+        , #{hp}
+        , #{atk}
+        , #{spd}
+        , #{def}
+        , #{res}
+        , #{blessing}
+        , #{heroType}
+        , #{moveType}
+        , #{weapon}
+        , #{weaponType}
+        , #{weaponPower}
+        , #{entry}
+        , #{color}
+        , #{race}
+        , #{skillA}
+        , #{skillB}
+        , #{skillC}
+        , #{skillAss}
+        , #{skillSp}
+        , #{limitPlus}
+        , #{dragonFlower}
+        , #{favorite}
+        , #{heroRank}
+        , #{pickFlag}
+        , #{releaseDate}
+        )
+    </insert>
+
+    <!-- 删除数据 -->
+    <delete id="delete">
+        DELETE FROM FIREEMBLEM_HERO WHERE ID = #{id}
+    </delete>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.example.mysql.model.FireemblemHero" >
+        UPDATE FIREEMBLEM_HERO
+        <set>
+        <if test="rarity!=null and rarity!=''">
+            RARITY = #{rarity},
+        </if>
+        <if test="hp!=null and hp!=''">
+            HP = #{hp},
+        </if>
+        <if test="atk!=null and atk!=''">
+            ATK = #{atk},
+        </if>
+        <if test="spd!=null and spd!=''">
+            SPD = #{spd},
+        </if>
+        <if test="def!=null and def!=''">
+            DEF = #{def},
+        </if>
+        <if test="res!=null and res!=''">
+            RES = #{res},
+        </if>
+        <if test="blessing!=null and blessing!=''">
+            BLESSING = #{blessing},
+        </if>
+        <if test="weapon!=null and weapon!=''">
+            WEAPON = #{weapon},
+        </if>
+        <if test="weaponPower!=null and weaponPower!=''">
+            WEAPON_POWER = #{weaponPower},
+        </if>
+        <if test="skillA!=null and skillA!=''">
+            SKILL_A = #{skillA},
+        </if>
+        <if test="skillB!=null and skillB!=''">
+            SKILL_B = #{skillB},
+        </if>
+        <if test="skillC!=null and skillC!=''">
+            SKILL_C = #{skillC},
+        </if>
+        <if test="skillAss!=null and skillAss!=''">
+            SKILL_ASS = #{skillAss},
+        </if>
+        <if test="skillSp!=null and skillSp!=''">
+            SKILL_SP = #{skillSp},
+        </if>
+        <if test="limitPlus!=null and limitPlus!=''">
+            LIMIT_PLUS = #{limitPlus},
+        </if>
+        <if test="dragonFlower!=null and dragonFlower!=''">
+            DRAGON_FLOWER = #{dragonFlower},
+        </if>
+        <if test="favorite!=null and favorite!=''">
+            FAVORITE = #{favorite},
+        </if>
+        <if test="heroRank!=null and heroRank!=''">
+            HERO_RANK = #{heroRank},
+        </if>
+        <if test="pickFlag!=null and pickFlag!=''">
+            PICK_FLAG = #{pickFlag},
+        </if>
+
+        </set>
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 业务主键查找唯一值 -->
+    <select id="selectOneByUniqueKey" resultMap="FireemblemHeroResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM FIREEMBLEM_HERO
+        <where>
+            AND IMG_NAME = #{imgName}
+
+        </where>
+    </select>
+
+    <!-- 自定义查找 -->
+    <select id="customQuary" parameterType="com.example.mysql.dto.FireemblemHeroDto" resultType="com.example.mysql.model.FireemblemHero">
+        SELECT
+             ${selectQuary}
+        FROM FIREEMBLEM_HERO
+        <if test="joinPart!=null">
+            ${joinPart}
+        </if>
+        <where>
+            1 = 1
+            <if test="condition!=null and condition!=''">
+             AND ${condition}
+            </if>
+        </where>
+        <if test="groupBy!=null and groupBy!=''">
+            GROUP BY ${groupBy}
+        </if>
+        <if test="having!=null and having!=''">
+            HAVING ${having}
+        </if>
+        <if test="orderBy!=null and orderBy!=''">
+            ORDER BY ${orderBy}
+        </if>
+    </select>
+</mapper>

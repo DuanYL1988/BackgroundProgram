@@ -1,0 +1,20 @@
+server:
+  port: 8082
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+spring:
+  datasource:
+    password: fireemblem
+    username: fireemblem
+    url: jdbc:oracle:thin:@localhost:1521:ORCL
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    database-platform: org.hibernate.dialect.Oracle12cDialect
+#    show-sql: true
+#    properties:
+#      hibernate.format_sql: true
+fileData:
+  staticAccessPath: images
+  fileData.staticAccessPath: D:/picture/illustration

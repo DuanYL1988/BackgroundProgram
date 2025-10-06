@@ -1,0 +1,4 @@
+resources/data
+node_modules/
+*.log
+*.html

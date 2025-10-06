@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.sqlite.repository.AccountRepository" >
+  <!-- ResultMap -->
+  <resultMap id="AccountResultMap" type="com.example.sqlite.model.Account" >
+    <result column="ID" property="id" jdbcType="INTEGER" />
+    <result column="LOGIN_NAME" property="loginName" jdbcType="VARCHAR" />
+    <result column="USERNAME" property="username" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="APPLICATION" property="application" jdbcType="VARCHAR" />
+    <result column="COMPANY" property="company" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="TELPHONE" property="telphone" jdbcType="VARCHAR" />
+    <result column="FACE_LOCAL" property="faceLocal" jdbcType="VARCHAR" />
+    <result column="FACE_URL" property="faceUrl" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="select_column_list">
+    `ID`
+    ,`LOGIN_NAME`
+    ,`USERNAME`
+    ,`PASSWORD`
+    ,`ROLE_ID`
+    ,`APPLICATION`
+    ,`COMPANY`
+    ,`GROUP_NAME`
+    ,`TELPHONE`
+    ,`FACE_LOCAL`
+    ,`FACE_URL`
+  </sql>
+
+  <sql id="insert_column_list">
+    `ID`
+    ,`LOGIN_NAME`
+    ,`USERNAME`
+    ,`PASSWORD`
+    ,`ROLE_ID`
+    ,`APPLICATION`
+    ,`COMPANY`
+    ,`GROUP_NAME`
+    ,`TELPHONE`
+    ,`FACE_LOCAL`
+    ,`FACE_URL`
+  </sql>
+
+  <select id="selectOneById" resultMap="AccountResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      ACCOUNT
+    WHERE
+      ID = #{id}
+  </select>
+
+  <select id="getCountByDto" parameterType="com.example.sqlite.model.Account" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM ACCOUNT
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="loginName!=null and loginName!=''">
+        AND LOGIN_NAME = #{loginName}
+      </if>
+      <if test="username!=null and username!=''">
+        AND USERNAME = #{username}
+      </if>
+      <if test="password!=null and password!=''">
+        AND PASSWORD = #{password}
+      </if>
+      <if test="roleId!=null and roleId!=''">
+        AND ROLE_ID = #{roleId}
+      </if>
+      <if test="application!=null and application!=''">
+        AND APPLICATION = #{application}
+      </if>
+      <if test="company!=null and company!=''">
+        AND COMPANY = #{company}
+      </if>
+      <if test="groupName!=null and groupName!=''">
+        AND GROUP_NAME = #{groupName}
+      </if>
+      <if test="telphone!=null and telphone!=''">
+        AND TELPHONE = #{telphone}
+      </if>
+      <if test="faceLocal!=null and faceLocal!=''">
+        AND FACE_LOCAL = #{faceLocal}
+      </if>
+      <if test="faceUrl!=null and faceUrl!=''">
+        AND FACE_URL = #{faceUrl}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByDto" parameterType="com.example.sqlite.model.Account" resultMap="AccountResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      ACCOUNT
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="loginName!=null and loginName!=''">
+        AND LOGIN_NAME = #{loginName}
+      </if>
+      <if test="username!=null and username!=''">
+        AND USERNAME = #{username}
+      </if>
+      <if test="password!=null and password!=''">
+        AND PASSWORD = #{password}
+      </if>
+      <if test="roleId!=null and roleId!=''">
+        AND ROLE_ID = #{roleId}
+      </if>
+      <if test="application!=null and application!=''">
+        AND APPLICATION = #{application}
+      </if>
+      <if test="company!=null and company!=''">
+        AND COMPANY = #{company}
+      </if>
+      <if test="groupName!=null and groupName!=''">
+        AND GROUP_NAME = #{groupName}
+      </if>
+      <if test="telphone!=null and telphone!=''">
+        AND TELPHONE = #{telphone}
+      </if>
+      <if test="faceLocal!=null and faceLocal!=''">
+        AND FACE_LOCAL = #{faceLocal}
+      </if>
+      <if test="faceUrl!=null and faceUrl!=''">
+        AND FACE_URL = #{faceUrl}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+      LIMIT ${startRow} , ${pageSize}
+  </select>
+
+  <insert id="insert" parameterType="com.example.sqlite.model.Account" >
+    INSERT INTO ACCOUNT(
+    <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+    <include refid="insert_column_list"></include>
+    ) VALUES (
+       #{id}
+      , #{loginName}
+      , #{username}
+      , #{password}
+      , #{roleId}
+      , #{application}
+      , #{company}
+      , #{groupName}
+      , #{telphone}
+      , #{faceLocal}
+      , #{faceUrl}
+    )
+  </insert>
+
+  <delete id="delete">
+    DELETE FROM ACCOUNT WHERE ID = #{id}
+  </delete>
+
+  <update id="update" parameterType="com.example.sqlite.model.Account" >
+    UPDATE
+      ACCOUNT
+    <set>
+      <if test="id!=null and id!=''">
+        ID = #{id},
+      </if>
+      <if test="loginName!=null and loginName!=''">
+        LOGIN_NAME = #{loginName},
+      </if>
+      <if test="username!=null and username!=''">
+        USERNAME = #{username},
+      </if>
+      <if test="password!=null and password!=''">
+        PASSWORD = #{password},
+      </if>
+      <if test="roleId!=null and roleId!=''">
+        ROLE_ID = #{roleId},
+      </if>
+      <if test="application!=null and application!=''">
+        APPLICATION = #{application},
+      </if>
+      <if test="company!=null and company!=''">
+        COMPANY = #{company},
+      </if>
+      <if test="groupName!=null and groupName!=''">
+        GROUP_NAME = #{groupName},
+      </if>
+      <if test="telphone!=null and telphone!=''">
+        TELPHONE = #{telphone},
+      </if>
+      <if test="faceLocal!=null and faceLocal!=''">
+        FACE_LOCAL = #{faceLocal},
+      </if>
+      <if test="faceUrl!=null and faceUrl!=''">
+        FACE_URL = #{faceUrl},
+      </if>
+    </set>
+    WHERE
+      ID = #{id}
+  </update>
+
+  <select id="selectOneByUniqueKey" resultMap="AccountResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      ACCOUNT
+    <where>
+        1 = 1
+        AND LOGIN_NAME = #{loginName}
+        OR TELPHONE = #{loginName}
+    </where>
+  </select>
+
+  <select id="customQuary" parameterType="com.example.sqlite.model.Account" resultType="com.example.sqlite.model.Account">
+    SELECT
+       ${selectQuary}
+    FROM
+      ACCOUNT
+    <if test="joinPart!=null">
+        ${joinPart}
+    </if>
+    <where>
+        1 = 1
+        <if test="condition!=null">
+         AND ${condition}
+        </if>
+    </where>
+    <if test="groupBy!=null">
+      GROUP BY ${groupBy}
+    </if>
+    <if test="having!=null">
+      HAVING ${having}
+    </if>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+  </select>
+
+</mapper>
+

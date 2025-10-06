@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.mysql.repository.MenuRepository" >
+    <!-- ResultMap -->
+    <resultMap id="MenuResultMap" type="com.example.mysql.model.Menu" >
+        <result column="ID" property= "id" jdbcType= "INTEGER"/>
+        <result column="APPLICATION" property= "application" jdbcType= "VARCHAR"/>
+        <result column="COMP_GROUP" property= "compGroup" jdbcType= "VARCHAR"/>
+        <result column="MENU_CODE" property= "menuCode" jdbcType= "VARCHAR"/>
+        <result column="MENU_NAME" property= "menuName" jdbcType= "VARCHAR"/>
+        <result column="MENU_LEVEL" property= "menuLevel" jdbcType= "VARCHAR"/>
+        <result column="PARENT_ID" property= "parentId" jdbcType= "VARCHAR"/>
+        <result column="HTML_URL" property= "htmlUrl" jdbcType= "VARCHAR"/>
+        <result column="SERVER_URL" property= "serverUrl" jdbcType= "VARCHAR"/>
+        <result column="VUE_URL" property= "vueUrl" jdbcType= "VARCHAR"/>
+        <result column="APP_PARAM" property= "appParam" jdbcType= "VARCHAR"/>
+        <result column="ICON" property= "icon" jdbcType= "VARCHAR"/>
+        <result column="ICON_URL" property= "iconUrl" jdbcType= "VARCHAR"/>
+        <result column="DISABLE_FLAG" property= "disableFlag" jdbcType= "VARCHAR"/>
+        <result column="ITEM_SORT" property= "itemSort" jdbcType= "INTEGER"/>
+    </resultMap>
+
+    <!-- 全字段检索 -->
+    <sql id="select_column_list">
+        ID
+        , (SELECT T2.NAME FROM CODE_MASTER T2 WHERE T2.CATEGORY_ID='menu' AND T2.CODE = MENU.APPLICATION) AS `APPLICATION`
+        , COMP_GROUP
+        , MENU_CODE
+        , MENU_NAME
+        , MENU_LEVEL
+        , PARENT_ID
+        , HTML_URL
+        , SERVER_URL
+        , VUE_URL
+        , APP_PARAM
+        , ICON
+        , ICON_URL
+        , DISABLE_FLAG
+        , ITEM_SORT
+    </sql>
+
+    <!-- 插入数据字段 -->
+    <sql id="insert_column_list">
+        ID
+        , APPLICATION
+        , COMP_GROUP
+        , MENU_CODE
+        , MENU_NAME
+        , MENU_LEVEL
+        , PARENT_ID
+        , HTML_URL
+        , SERVER_URL
+        , VUE_URL
+        , APP_PARAM
+        , ICON
+        , ICON_URL
+        , DISABLE_FLAG
+        , ITEM_SORT
+    </sql>
+
+    <!-- 通过ID查找唯一一条记录 -->
+    <select id="selectOneById" resultMap="MenuResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM MENU
+        WHERE
+            ID = #{id}
+    </select>
+
+    <!-- 根据条件取得件数 -->
+    <select id="getCountByDto" parameterType="com.example.mysql.dto.MenuDto" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM MENU
+        <where>
+            1 = 1
+            <if test="application!=null and application!=''">
+                AND APPLICATION = #{application}
+            </if>
+            <if test="compGroup!=null and compGroup!=''">
+                AND COMP_GROUP = #{compGroup}
+            </if>
+            <if test="parentId!=null and parentId!=''">
+                AND PARENT_ID = #{parentId}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据条件取得一览 -->
+    <select id="selectByDto" parameterType="com.example.mysql.dto.MenuDto" resultMap="MenuResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM MENU
+        <where>
+            1 = 1
+            <if test="application!=null and application!=''">
+                AND APPLICATION = #{application}
+            </if>
+            <if test="compGroup!=null and compGroup!=''">
+                AND COMP_GROUP = #{compGroup}
+            </if>
+            <if test="parentId!=null and parentId!=''">
+                AND PARENT_ID = #{parentId}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+        <if test="orderBy!=null">
+            ORDER BY ${orderBy}
+        </if>
+            LIMIT ${startRow} , ${pageSize}
+    </select>
+
+    <!-- 新增一条数据 -->
+    <insert id="insert" parameterType="com.example.mysql.model.Menu" >
+        INSERT INTO MENU (
+        <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+        <include refid="insert_column_list"></include>
+        ) VALUES (
+        #{id}
+        , #{application}
+        , #{compGroup}
+        , #{menuCode}
+        , #{menuName}
+        , #{menuLevel}
+        , #{parentId}
+        , #{htmlUrl}
+        , #{serverUrl}
+        , #{vueUrl}
+        , #{appParam}
+        , #{icon}
+        , #{iconUrl}
+        , #{disableFlag}
+        , #{itemSort}
+        )
+    </insert>
+
+    <!-- 删除数据 -->
+    <delete id="delete">
+        DELETE FROM MENU WHERE ID = #{id}
+    </delete>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.example.mysql.model.Menu" >
+        UPDATE MENU
+        <set>
+        <if test="menuName!=null and menuName!=''">
+            MENU_NAME = #{menuName},
+        </if>
+        <if test="parentId!=null and parentId!=''">
+            PARENT_ID = #{parentId},
+        </if>
+        <if test="htmlUrl!=null and htmlUrl!=''">
+            HTML_URL = #{htmlUrl},
+        </if>
+        <if test="serverUrl!=null and serverUrl!=''">
+            SERVER_URL = #{serverUrl},
+        </if>
+        <if test="vueUrl!=null and vueUrl!=''">
+            VUE_URL = #{vueUrl},
+        </if>
+        <if test="appParam!=null and appParam!=''">
+            APP_PARAM = #{appParam},
+        </if>
+        <if test="icon!=null and icon!=''">
+            ICON = #{icon},
+        </if>
+        <if test="iconUrl!=null and iconUrl!=''">
+            ICON_URL = #{iconUrl},
+        </if>
+        <if test="disableFlag!=null and disableFlag!=''">
+            DISABLE_FLAG = #{disableFlag},
+        </if>
+        <if test="itemSort!=null and itemSort!=''">
+            ITEM_SORT = #{itemSort},
+        </if>
+        </set>
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 业务主键查找唯一值 -->
+    <select id="selectOneByUniqueKey" resultMap="MenuResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM MENU
+        <where>
+            AND APPLICATION = #{application}
+            AND MENU_CODE = #{menuCode}
+
+        </where>
+    </select>
+
+    <!-- 自定义查找 -->
+    <select id="customQuary" parameterType="com.example.mysql.dto.MenuDto" resultType="com.example.mysql.model.Menu">
+        SELECT
+             ${selectQuary}
+        FROM MENU
+        <if test="joinPart!=null">
+            ${joinPart}
+        </if>
+        <where>
+            1 = 1
+            <if test="condition!=null and condition!=''">
+             AND ${condition}
+            </if>
+        </where>
+        <if test="groupBy!=null and groupBy!=''">
+            GROUP BY ${groupBy}
+        </if>
+        <if test="having!=null and having!=''">
+            HAVING ${having}
+        </if>
+        <if test="orderBy!=null and orderBy!=''">
+            ORDER BY ${orderBy}
+        </if>
+    </select>
+</mapper>

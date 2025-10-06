@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.mysql.repository.ArknightsOperatorRepository" >
+    <!-- ResultMap -->
+    <resultMap id="ArknightsOperatorResultMap" type="com.example.mysql.model.ArknightsOperator" >
+        <result column="ID" property= "id" jdbcType= "VARCHAR"/>
+        <result column="NAME" property= "name" jdbcType= "VARCHAR"/>
+        <result column="NAME_CN" property= "nameCn" jdbcType= "VARCHAR"/>
+        <result column="NAME_JP" property= "nameJp" jdbcType= "VARCHAR"/>
+        <result column="FACE_IMG" property= "faceImg" jdbcType= "VARCHAR"/>
+        <result column="STAGE_ONE_IMG" property= "stageOneImg" jdbcType= "VARCHAR"/>
+        <result column="STAGE_TWO_IMG" property= "stageTwoImg" jdbcType= "VARCHAR"/>
+        <result column="SPRITE_IMG" property= "spriteImg" jdbcType= "VARCHAR"/>
+        <result column="SKIN_NAME" property= "skinName" jdbcType= "VARCHAR"/>
+        <result column="SKIN_ICON" property= "skinIcon" jdbcType= "VARCHAR"/>
+        <result column="SKIN_SPRITE" property= "skinSprite" jdbcType= "VARCHAR"/>
+        <result column="SKIN_IMAGE" property= "skinImage" jdbcType= "VARCHAR"/>
+        <result column="DEFALT_SKIN" property= "defaltSkin" jdbcType= "VARCHAR"/>
+        <result column="RARITY" property= "rarity" jdbcType= "VARCHAR"/>
+        <result column="VOCATION" property= "vocation" jdbcType= "VARCHAR"/>
+        <result column="SUB_VOCATION" property= "subVocation" jdbcType= "VARCHAR"/>
+        <result column="TAGS" property= "tags" jdbcType= "VARCHAR"/>
+        <result column="INFLUENCE" property= "influence" jdbcType= "VARCHAR"/>
+        <result column="BIRTH_PLACE" property= "birthPlace" jdbcType= "VARCHAR"/>
+        <result column="RACE" property= "race" jdbcType= "VARCHAR"/>
+        <result column="HP" property= "hp" jdbcType= "VARCHAR"/>
+        <result column="ATK" property= "atk" jdbcType= "VARCHAR"/>
+        <result column="DEF" property= "def" jdbcType= "VARCHAR"/>
+        <result column="RES" property= "res" jdbcType= "VARCHAR"/>
+        <result column="COST" property= "cost" jdbcType= "VARCHAR"/>
+        <result column="SKILLS" property= "skills" jdbcType= "VARCHAR"/>
+        <result column="SKILLS_ICON" property= "skillsIcon" jdbcType= "VARCHAR"/>
+        <result column="BUILD_SKILLS" property= "buildSkills" jdbcType= "VARCHAR"/>
+        <result column="CAPACITY" property= "capacity" jdbcType= "VARCHAR"/>
+        <result column="RELEASE_DATE" property= "releaseDate" jdbcType= "VARCHAR"/>
+    </resultMap>
+
+    <!-- 全字段检索 -->
+    <sql id="select_column_list">
+        ID
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , FACE_IMG
+        , STAGE_ONE_IMG
+        , STAGE_TWO_IMG
+        , SPRITE_IMG
+        , SKIN_NAME
+        , SKIN_ICON
+        , SKIN_SPRITE
+        , SKIN_IMAGE
+        , DEFALT_SKIN
+        , RARITY
+        , VOCATION
+        , SUB_VOCATION
+        , TAGS
+        , INFLUENCE
+        , BIRTH_PLACE
+        , RACE
+        , HP
+        , ATK
+        , DEF
+        , RES
+        , COST
+        , SKILLS
+        , SKILLS_ICON
+        , BUILD_SKILLS
+        , CAPACITY
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 插入数据字段 -->
+    <sql id="insert_column_list">
+        ID
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , FACE_IMG
+        , STAGE_ONE_IMG
+        , STAGE_TWO_IMG
+        , SPRITE_IMG
+        , SKIN_NAME
+        , SKIN_ICON
+        , SKIN_SPRITE
+        , SKIN_IMAGE
+        , DEFALT_SKIN
+        , RARITY
+        , VOCATION
+        , SUB_VOCATION
+        , TAGS
+        , INFLUENCE
+        , BIRTH_PLACE
+        , RACE
+        , HP
+        , ATK
+        , DEF
+        , RES
+        , COST
+        , SKILLS
+        , SKILLS_ICON
+        , BUILD_SKILLS
+        , CAPACITY
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 通过ID查找唯一一条记录 -->
+    <select id="selectOneById" resultMap="ArknightsOperatorResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM ARKNIGHTS_OPERATOR
+        WHERE
+            ID = #{id}
+    </select>
+
+    <!-- 根据条件取得件数 -->
+    <select id="getCountByDto" parameterType="com.example.mysql.dto.ArknightsOperatorDto" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM ARKNIGHTS_OPERATOR
+        <where>
+            1 = 1
+            <if test="rarity!=null and rarity!=''">
+                AND RARITY = #{rarity}
+            </if>
+            <if test="vocation!=null and vocation!=''">
+                AND VOCATION = #{vocation}
+            </if>
+            <if test="subVocation!=null and subVocation!=''">
+                AND SUB_VOCATION = #{subVocation}
+            </if>
+            <if test="influence!=null and influence!=''">
+                AND INFLUENCE = #{influence}
+            </if>
+            <if test="birthPlace!=null and birthPlace!=''">
+                AND BIRTH_PLACE = #{birthPlace}
+            </if>
+            <if test="race!=null and race!=''">
+                AND RACE = #{race}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据条件取得一览 -->
+    <select id="selectByDto" parameterType="com.example.mysql.dto.ArknightsOperatorDto" resultMap="ArknightsOperatorResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM ARKNIGHTS_OPERATOR
+        <where>
+            1 = 1
+            <if test="rarity!=null and rarity!=''">
+                AND RARITY = #{rarity}
+            </if>
+            <if test="vocation!=null and vocation!=''">
+                AND VOCATION = #{vocation}
+            </if>
+            <if test="subVocation!=null and subVocation!=''">
+                AND SUB_VOCATION = #{subVocation}
+            </if>
+            <if test="influence!=null and influence!=''">
+                AND INFLUENCE = #{influence}
+            </if>
+            <if test="birthPlace!=null and birthPlace!=''">
+                AND BIRTH_PLACE = #{birthPlace}
+            </if>
+            <if test="race!=null and race!=''">
+                AND RACE = #{race}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+        <if test="orderBy!=null">
+            ORDER BY ${orderBy}
+        </if>
+            LIMIT ${startRow} , ${pageSize}
+    </select>
+
+    <!-- 新增一条数据 -->
+    <insert id="insert" parameterType="com.example.mysql.model.ArknightsOperator" >
+        INSERT INTO ARKNIGHTS_OPERATOR (
+        <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+        <include refid="insert_column_list"></include>
+        ) VALUES (
+        #{id}
+        , #{name}
+        , #{nameCn}
+        , #{nameJp}
+        , #{faceImg}
+        , #{stageOneImg}
+        , #{stageTwoImg}
+        , #{spriteImg}
+        , #{skinName}
+        , #{skinIcon}
+        , #{skinSprite}
+        , #{skinImage}
+        , #{defaltSkin}
+        , #{rarity}
+        , #{vocation}
+        , #{subVocation}
+        , #{tags}
+        , #{influence}
+        , #{birthPlace}
+        , #{race}
+        , #{hp}
+        , #{atk}
+        , #{def}
+        , #{res}
+        , #{cost}
+        , #{skills}
+        , #{skillsIcon}
+        , #{buildSkills}
+        , #{capacity}
+        , #{releaseDate}
+        )
+    </insert>
+
+    <!-- 删除数据 -->
+    <delete id="delete">
+        DELETE FROM ARKNIGHTS_OPERATOR WHERE ID = #{id}
+    </delete>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.example.mysql.model.ArknightsOperator" >
+        UPDATE ARKNIGHTS_OPERATOR
+        <set>
+        <if test="nameJp!=null and nameJp!=''">
+            NAME_JP = #{nameJp},
+        </if>
+        <if test="defaltSkin!=null and defaltSkin!=''">
+            DEFALT_SKIN = #{defaltSkin},
+        </if>
+        <if test="tags!=null and tags!=''">
+            TAGS = #{tags},
+        </if>
+        <if test="hp!=null and hp!=''">
+            HP = #{hp},
+        </if>
+        <if test="atk!=null and atk!=''">
+            ATK = #{atk},
+        </if>
+        <if test="def!=null and def!=''">
+            DEF = #{def},
+        </if>
+        <if test="res!=null and res!=''">
+            RES = #{res},
+        </if>
+        <if test="cost!=null and cost!=''">
+            COST = #{cost},
+        </if>
+
+        </set>
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 业务主键查找唯一值 -->
+    <select id="selectOneByUniqueKey" resultMap="ArknightsOperatorResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM ARKNIGHTS_OPERATOR
+        <where>
+            AND NAME = #{name}
+
+        </where>
+    </select>
+
+    <!-- 自定义查找 -->
+    <select id="customQuary" parameterType="com.example.mysql.dto.ArknightsOperatorDto" resultType="com.example.mysql.model.ArknightsOperator">
+        SELECT
+             ${selectQuary}
+        FROM ARKNIGHTS_OPERATOR
+        <if test="joinPart!=null">
+            ${joinPart}
+        </if>
+        <where>
+            1 = 1
+            <if test="condition!=null and condition!=''">
+             AND ${condition}
+            </if>
+        </where>
+        <if test="groupBy!=null and groupBy!=''">
+            GROUP BY ${groupBy}
+        </if>
+        <if test="having!=null and having!=''">
+            HAVING ${having}
+        </if>
+        <if test="orderBy!=null and orderBy!=''">
+            ORDER BY ${orderBy}
+        </if>
+    </select>
+</mapper>

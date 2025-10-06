@@ -1,0 +1,8 @@
+/__pycache__/
+*.png
+A1_resource/
+*/__pycache__/
+*.xlsx
+*.html
+01_Crawler/CrawlerDataFile/*
+*.lnk

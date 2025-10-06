@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.sqlite.repository.MenuRepository" >
+  <!-- ResultMap -->
+  <resultMap id="MenuResultMap" type="com.example.sqlite.model.Menu" >
+    <result column="ID" property="id" jdbcType="INTEGER" />
+    <result column="APPLICATION" property="application" jdbcType="VARCHAR" />
+    <result column="COMPANY" property="company" jdbcType="VARCHAR" />
+    <result column="COMP_GROUP" property="compGroup" jdbcType="VARCHAR" />
+    <result column="LOCATION" property="location" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="HTML_URL" property="htmlUrl" jdbcType="VARCHAR" />
+    <result column="SERVER_URL" property="serverUrl" jdbcType="VARCHAR" />
+    <result column="VUE_URL" property="vueUrl" jdbcType="VARCHAR" />
+    <result column="ICON_URL" property="iconUrl" jdbcType="VARCHAR" />
+    <result column="ITEM_SORT" property="sort" jdbcType="INTEGER" />
+  </resultMap>
+
+  <sql id="select_column_list">
+    `ID`
+    ,`APPLICATION`
+    ,`COMPANY`
+    ,`COMP_GROUP`
+    ,`LOCATION`
+    ,`NAME`
+    ,`HTML_URL`
+    ,`SERVER_URL`
+    ,`VUE_URL`
+    ,`ICON_URL`
+    ,`ITEM_SORT`
+  </sql>
+
+  <sql id="insert_column_list">
+    `ID`
+    ,`APPLICATION`
+    ,`COMPANY`
+    ,`COMP_GROUP`
+    ,`LOCATION`
+    ,`NAME`
+    ,`HTML_URL`
+    ,`SERVER_URL`
+    ,`VUE_URL`
+    ,`ITEM_SORT`
+  </sql>
+
+  <select id="selectOneById" resultMap="MenuResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      MENU
+    WHERE
+      ID = #{id}
+  </select>
+
+  <select id="getCountByDto" parameterType="com.example.sqlite.model.Menu" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM MENU
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="application!=null and application!=''">
+        AND APPLICATION = #{application}
+      </if>
+      <if test="company!=null and company!=''">
+        AND COMPANY = #{company}
+      </if>
+      <if test="compGroup!=null and compGroup!=''">
+        AND COMP_GROUP = #{compGroup}
+      </if>
+      <if test="location!=null and location!=''">
+        AND LOCATION = #{location}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="htmlUrl!=null and htmlUrl!=''">
+        AND HTML_URL = #{htmlUrl}
+      </if>
+      <if test="serverUrl!=null and serverUrl!=''">
+        AND SERVER_URL = #{serverUrl}
+      </if>
+      <if test="vueUrl!=null and vueUrl!=''">
+        AND VUE_URL = #{vueUrl}
+      </if>
+      <if test="sort!=null and sort!=''">
+        AND ITEM_SORT = #{sort}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByDto" parameterType="com.example.sqlite.model.Menu" resultMap="MenuResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      MENU
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="application!=null and application!='' and application!='master'">
+        AND APPLICATION = #{application}
+      </if>
+      <if test="company!=null and company!=''">
+        AND COMPANY = #{company}
+      </if>
+      <if test="compGroup!=null and compGroup!='' and compGroup!='master'">
+        AND COMP_GROUP = #{compGroup}
+      </if>
+      <if test="location!=null and location!=''">
+        AND LOCATION = #{location}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="htmlUrl!=null and htmlUrl!=''">
+        AND HTML_URL = #{htmlUrl}
+      </if>
+      <if test="serverUrl!=null and serverUrl!=''">
+        AND SERVER_URL = #{serverUrl}
+      </if>
+      <if test="vueUrl!=null and vueUrl!=''">
+        AND VUE_URL = #{vueUrl}
+      </if>
+      <if test="sort!=null and sort!=''">
+        AND ITEM_SORT = #{sort}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+      LIMIT ${startRow} , ${pageSize}
+  </select>
+
+  <insert id="insert" parameterType="com.example.sqlite.model.Menu" >
+    INSERT INTO MENU(
+    <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+    <include refid="insert_column_list"></include>
+    ) VALUES (
+       #{id}
+      , #{application}
+      , #{company}
+      , #{compGroup}
+      , #{location}
+      , #{name}
+      , #{htmlUrl}
+      , #{serverUrl}
+      , #{vueUrl}
+      , #{sort}
+    )
+  </insert>
+
+  <delete id="delete">
+    DELETE FROM MENU WHERE ID = #{id}
+  </delete>
+
+  <update id="update" parameterType="com.example.sqlite.model.Menu" >
+    UPDATE
+      MENU
+    <set>
+      <if test="id!=null and id!=''">
+        ID = #{id},
+      </if>
+      <if test="application!=null and application!=''">
+        APPLICATION = #{application},
+      </if>
+      <if test="company!=null and company!=''">
+        COMPANY = #{company},
+      </if>
+      <if test="compGroup!=null and compGroup!=''">
+        COMP_GROUP = #{compGroup},
+      </if>
+      <if test="location!=null and location!=''">
+        LOCATION = #{location},
+      </if>
+      <if test="name!=null and name!=''">
+        NAME = #{name},
+      </if>
+      <if test="htmlUrl!=null and htmlUrl!=''">
+        HTML_URL = #{htmlUrl},
+      </if>
+      <if test="serverUrl!=null and serverUrl!=''">
+        SERVER_URL = #{serverUrl},
+      </if>
+      <if test="vueUrl!=null and vueUrl!=''">
+        VUE_URL = #{vueUrl},
+      </if>
+      <if test="sort!=null and sort!=''">
+        ITEM_SORT = #{sort},
+      </if>
+    </set>
+    WHERE
+      ID = #{id}
+  </update>
+
+  <select id="selectOneByUniqueKey" resultMap="MenuResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      MENU
+    <where>
+    </where>
+  </select>
+
+  <select id="customQuary" parameterType="com.example.sqlite.model.Menu" resultType="com.example.sqlite.model.Menu">
+    SELECT
+       ${selectQuary}
+    FROM
+      MENU
+    <if test="joinPart!=null">
+        ${joinPart}
+    </if>
+    <where>
+        1 = 1
+        <if test="condition!=null">
+         AND ${condition}
+        </if>
+    </where>
+    <if test="groupBy!=null">
+      GROUP BY ${groupBy}
+    </if>
+    <if test="having!=null">
+      HAVING ${having}
+    </if>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+  </select>
+
+</mapper>
+

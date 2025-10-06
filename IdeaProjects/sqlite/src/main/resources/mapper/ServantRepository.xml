@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.sqlite.repository.ServantRepository" >
+  <!-- ResultMap -->
+  <resultMap id="ServantResultMap" type="com.example.sqlite.model.Servant" >
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="IMG_NAME" property="imgName" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+    <result column="CLASS_TYPE" property="classType" jdbcType="VARCHAR" />
+    <result column="HERO_TYPE" property="heroType" jdbcType="VARCHAR" />
+    <result column="EVENT_FLAG" property="eventFlag" jdbcType="VARCHAR" />
+    <result column="HP" property="hp" jdbcType="INTEGER" />
+    <result column="ATTACT" property="attact" jdbcType="INTEGER" />
+    <result column="SKILL_1" property="skill1" jdbcType="VARCHAR" />
+    <result column="SKILL_2" property="skill2" jdbcType="VARCHAR" />
+    <result column="SKILL_3" property="skill3" jdbcType="VARCHAR" />
+    <result column="SKILL_EXTRA" property="skillExtra" jdbcType="VARCHAR" />
+    <result column="EXTRA_TYPE" property="extraType" jdbcType="VARCHAR" />
+    <result column="EXTRA_COLOR" property="extraColor" jdbcType="VARCHAR" />
+    <result column="LIMIT_LEVEL" property="limitLevel" jdbcType="INTEGER" />
+    <result column="TRAITS" property="traits" jdbcType="VARCHAR" />
+    <result column="TEAM" property="team" jdbcType="INTEGER" />
+    <result column="FAVORITE" property="favorite" jdbcType="VARCHAR" />
+    <result column="RANK" property="rank" jdbcType="VARCHAR" />
+    <result column="CREATE_DATETIME" property="createDatetime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_DATETIME" property="updateDatetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="select_column_list">
+    `ID`
+    ,`IMG_NAME`
+    ,`NAME`
+    ,`NICK_NAME`
+    ,`CLASS_TYPE`
+    ,`HERO_TYPE`
+    ,`EVENT_FLAG`
+    ,`HP`
+    ,`ATTACT`
+    ,`SKILL_1`
+    ,`SKILL_2`
+    ,`SKILL_3`
+    ,`SKILL_EXTRA`
+    ,`EXTRA_TYPE`
+    ,`EXTRA_COLOR`
+    ,`LIMIT_LEVEL`
+    ,`TRAITS`
+    ,`TEAM`
+    ,`FAVORITE`
+    ,`RANK`
+    ,`CREATE_DATETIME`
+    ,`UPDATE_DATETIME`
+  </sql>
+
+  <sql id="insert_column_list">
+    `ID`
+    ,`IMG_NAME`
+    ,`NAME`
+    ,`NICK_NAME`
+    ,`CLASS_TYPE`
+    ,`HERO_TYPE`
+    ,`EVENT_FLAG`
+    ,`HP`
+    ,`ATTACT`
+    ,`SKILL_1`
+    ,`SKILL_2`
+    ,`SKILL_3`
+    ,`SKILL_EXTRA`
+    ,`EXTRA_TYPE`
+    ,`EXTRA_COLOR`
+    ,`LIMIT_LEVEL`
+    ,`TRAITS`
+    ,`TEAM`
+    ,`FAVORITE`
+    ,`RANK`
+    ,`CREATE_DATETIME`
+    ,`UPDATE_DATETIME`
+  </sql>
+
+  <select id="selectOneById" resultMap="ServantResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      SERVANT
+    WHERE
+      ID = #{id}
+  </select>
+
+  <select id="getCountByDto" parameterType="com.example.sqlite.model.Servant" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM SERVANT
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="imgName!=null and imgName!=''">
+        AND IMG_NAME = #{imgName}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="nickName!=null and nickName!=''">
+        AND NICK_NAME = #{nickName}
+      </if>
+      <if test="classType!=null and classType!=''">
+        AND CLASS_TYPE = #{classType}
+      </if>
+      <if test="heroType!=null and heroType!=''">
+        AND HERO_TYPE = #{heroType}
+      </if>
+      <if test="eventFlag!=null and eventFlag!=''">
+        AND EVENT_FLAG = #{eventFlag}
+      </if>
+      <if test="hp!=null and hp!=''">
+        AND HP = #{hp}
+      </if>
+      <if test="attact!=null and attact!=''">
+        AND ATTACT = #{attact}
+      </if>
+      <if test="skill1!=null and skill1!=''">
+        AND SKILL_1 = #{skill1}
+      </if>
+      <if test="skill2!=null and skill2!=''">
+        AND SKILL_2 = #{skill2}
+      </if>
+      <if test="skill3!=null and skill3!=''">
+        AND SKILL_3 = #{skill3}
+      </if>
+      <if test="skillExtra!=null and skillExtra!=''">
+        AND SKILL_EXTRA = #{skillExtra}
+      </if>
+      <if test="extraType!=null and extraType!=''">
+        AND EXTRA_TYPE = #{extraType}
+      </if>
+      <if test="extraColor!=null and extraColor!=''">
+        AND EXTRA_COLOR = #{extraColor}
+      </if>
+      <if test="limitLevel!=null and limitLevel!=''">
+        AND LIMIT_LEVEL = #{limitLevel}
+      </if>
+      <if test="traits!=null and traits!=''">
+        AND TRAITS = #{traits}
+      </if>
+      <if test="team!=null and team!=''">
+        AND TEAM = #{team}
+      </if>
+      <if test="favorite!=null and favorite!=''">
+        AND FAVORITE = #{favorite}
+      </if>
+      <if test="rank!=null and rank!=''">
+        AND RANK = #{rank}
+      </if>
+      <if test="createDatetime!=null and createDatetime!=''">
+        AND CREATE_DATETIME = #{createDatetime}
+      </if>
+      <if test="updateDatetime!=null and updateDatetime!=''">
+        AND UPDATE_DATETIME = #{updateDatetime}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByDto" parameterType="com.example.sqlite.model.Servant" resultMap="ServantResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      SERVANT
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="imgName!=null and imgName!=''">
+        AND IMG_NAME = #{imgName}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="nickName!=null and nickName!=''">
+        AND NICK_NAME = #{nickName}
+      </if>
+      <if test="classType!=null and classType!=''">
+        AND CLASS_TYPE = #{classType}
+      </if>
+      <if test="heroType!=null and heroType!=''">
+        AND HERO_TYPE = #{heroType}
+      </if>
+      <if test="eventFlag!=null and eventFlag!=''">
+        AND EVENT_FLAG = #{eventFlag}
+      </if>
+      <if test="hp!=null and hp!=''">
+        AND HP = #{hp}
+      </if>
+      <if test="attact!=null and attact!=''">
+        AND ATTACT = #{attact}
+      </if>
+      <if test="skill1!=null and skill1!=''">
+        AND SKILL_1 = #{skill1}
+      </if>
+      <if test="skill2!=null and skill2!=''">
+        AND SKILL_2 = #{skill2}
+      </if>
+      <if test="skill3!=null and skill3!=''">
+        AND SKILL_3 = #{skill3}
+      </if>
+      <if test="skillExtra!=null and skillExtra!=''">
+        AND SKILL_EXTRA = #{skillExtra}
+      </if>
+      <if test="extraType!=null and extraType!=''">
+        AND EXTRA_TYPE = #{extraType}
+      </if>
+      <if test="extraColor!=null and extraColor!=''">
+        AND EXTRA_COLOR = #{extraColor}
+      </if>
+      <if test="limitLevel!=null and limitLevel!=''">
+        AND LIMIT_LEVEL = #{limitLevel}
+      </if>
+      <if test="traits!=null and traits!=''">
+        AND TRAITS = #{traits}
+      </if>
+      <if test="team!=null and team!=''">
+        AND TEAM = #{team}
+      </if>
+      <if test="favorite!=null and favorite!=''">
+        AND FAVORITE = #{favorite}
+      </if>
+      <if test="rank!=null and rank!=''">
+        AND RANK = #{rank}
+      </if>
+      <if test="createDatetime!=null and createDatetime!=''">
+        AND CREATE_DATETIME = #{createDatetime}
+      </if>
+      <if test="updateDatetime!=null and updateDatetime!=''">
+        AND UPDATE_DATETIME = #{updateDatetime}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+      LIMIT ${startRow} , ${pageSize}
+  </select>
+
+  <insert id="insert" parameterType="com.example.sqlite.model.Servant" >
+    INSERT INTO SERVANT(
+    <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+    <include refid="insert_column_list"></include>
+    ) VALUES (
+       #{id}
+      , #{imgName}
+      , #{name}
+      , #{nickName}
+      , #{classType}
+      , #{heroType}
+      , #{eventFlag}
+      , #{hp}
+      , #{attact}
+      , #{skill1}
+      , #{skill2}
+      , #{skill3}
+      , #{skillExtra}
+      , #{extraType}
+      , #{extraColor}
+      , #{limitLevel}
+      , #{traits}
+      , #{team}
+      , #{favorite}
+      , #{rank}
+      , #{createDatetime}
+      , #{updateDatetime}
+    )
+  </insert>
+
+  <delete id="delete">
+    DELETE FROM SERVANT WHERE ID = #{id}
+  </delete>
+
+  <update id="update" parameterType="com.example.sqlite.model.Servant" >
+    UPDATE
+      SERVANT
+    <set>
+      <if test="id!=null and id!=''">
+        ID = #{id},
+      </if>
+      <if test="imgName!=null and imgName!=''">
+        IMG_NAME = #{imgName},
+      </if>
+      <if test="name!=null and name!=''">
+        NAME = #{name},
+      </if>
+      <if test="nickName!=null and nickName!=''">
+        NICK_NAME = #{nickName},
+      </if>
+      <if test="classType!=null and classType!=''">
+        CLASS_TYPE = #{classType},
+      </if>
+      <if test="heroType!=null and heroType!=''">
+        HERO_TYPE = #{heroType},
+      </if>
+      <if test="eventFlag!=null and eventFlag!=''">
+        EVENT_FLAG = #{eventFlag},
+      </if>
+      <if test="hp!=null and hp!=''">
+        HP = #{hp},
+      </if>
+      <if test="attact!=null and attact!=''">
+        ATTACT = #{attact},
+      </if>
+      <if test="skill1!=null and skill1!=''">
+        SKILL_1 = #{skill1},
+      </if>
+      <if test="skill2!=null and skill2!=''">
+        SKILL_2 = #{skill2},
+      </if>
+      <if test="skill3!=null and skill3!=''">
+        SKILL_3 = #{skill3},
+      </if>
+      <if test="skillExtra!=null and skillExtra!=''">
+        SKILL_EXTRA = #{skillExtra},
+      </if>
+      <if test="extraType!=null and extraType!=''">
+        EXTRA_TYPE = #{extraType},
+      </if>
+      <if test="extraColor!=null and extraColor!=''">
+        EXTRA_COLOR = #{extraColor},
+      </if>
+      <if test="limitLevel!=null and limitLevel!=''">
+        LIMIT_LEVEL = #{limitLevel},
+      </if>
+      <if test="traits!=null and traits!=''">
+        TRAITS = #{traits},
+      </if>
+      <if test="team!=null and team!=''">
+        TEAM = #{team},
+      </if>
+      <if test="favorite!=null and favorite!=''">
+        FAVORITE = #{favorite},
+      </if>
+      <if test="rank!=null and rank!=''">
+        RANK = #{rank},
+      </if>
+      <if test="createDatetime!=null and createDatetime!=''">
+        CREATE_DATETIME = #{createDatetime},
+      </if>
+      <if test="updateDatetime!=null and updateDatetime!=''">
+        UPDATE_DATETIME = #{updateDatetime},
+      </if>
+    </set>
+    WHERE
+      ID = #{id}
+  </update>
+
+  <select id="selectOneByUniqueKey" resultMap="ServantResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      SERVANT
+    <where>
+      <if test="imgName!=null and imgName!=''">
+        AND IMG_NAME = #{imgName}
+      </if>
+    </where>
+  </select>
+
+  <select id="customQuary" parameterType="com.example.sqlite.model.Servant" resultType="com.example.sqlite.model.Servant">
+    SELECT
+       ${selectQuary}
+    FROM
+      SERVANT
+    <if test="joinPart!=null">
+        ${joinPart}
+    </if>
+    <where>
+        1 = 1
+        <if test="condition!=null">
+         AND ${condition}
+        </if>
+    </where>
+    <if test="groupBy!=null">
+      GROUP BY ${groupBy}
+    </if>
+    <if test="having!=null">
+      HAVING ${having}
+    </if>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+  </select>
+
+</mapper>
+

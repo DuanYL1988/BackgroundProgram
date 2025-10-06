@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.sqlite.repository.CodeMasterRepository" >
+  <!-- ResultMap -->
+  <resultMap id="CodeMasterResultMap" type="com.example.sqlite.model.CodeMaster" >
+    <result column="ID" property="id" jdbcType="INTEGER" />
+    <result column="APPLICATION" property="application" jdbcType="VARCHAR" />
+    <result column="CATEGORY_ID" property="categoryId" jdbcType="VARCHAR" />
+    <result column="CATEGORY_NAME" property="categoryName" jdbcType="VARCHAR" />
+    <result column="CODE" property="code" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="LINK_URL" property="linkUrl" jdbcType="VARCHAR" />
+    <result column="IMG_URL" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="ROLE_GROUP" property="roleGroup" jdbcType="VARCHAR" />
+    <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+    <result column="MEMO1" property="memo1" jdbcType="VARCHAR" />
+    <result column="MEMO2" property="memo2" jdbcType="VARCHAR" />
+    <result column="MEMO3" property="memo3" jdbcType="VARCHAR" />
+    <result column="NUMBER_COL1" property="numberCol1" jdbcType="INTEGER" />
+    <result column="NUMBER_COL2" property="numberCol2" jdbcType="INTEGER" />
+    <result column="NUMBER_COL3" property="numberCol3" jdbcType="INTEGER" />
+  </resultMap>
+
+  <sql id="select_column_list">
+    `ID`
+    ,`APPLICATION`
+    ,`CATEGORY_ID`
+    ,`CATEGORY_NAME`
+    ,`CODE`
+    ,`NAME`
+    ,`LINK_URL`
+    ,`IMG_URL`
+    ,`ROLE_GROUP`
+    ,`PARENT_ID`
+    ,`MEMO1`
+    ,`MEMO2`
+    ,`MEMO3`
+    ,`NUMBER_COL1`
+    ,`NUMBER_COL2`
+    ,`NUMBER_COL3`
+  </sql>
+
+  <sql id="insert_column_list">
+    `ID`
+    ,`APPLICATION`
+    ,`CATEGORY_ID`
+    ,`CATEGORY_NAME`
+    ,`CODE`
+    ,`NAME`
+    ,`LINK_URL`
+    ,`IMG_URL`
+    ,`ROLE_GROUP`
+    ,`PARENT_ID`
+    ,`MEMO1`
+    ,`MEMO2`
+    ,`MEMO3`
+    ,`NUMBER_COL1`
+    ,`NUMBER_COL2`
+    ,`NUMBER_COL3`
+  </sql>
+
+  <select id="selectOneById" resultMap="CodeMasterResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      CODE_MASTER
+    WHERE
+      ID = #{id}
+  </select>
+
+  <select id="getCountByDto" parameterType="com.example.sqlite.model.CodeMaster" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM CODE_MASTER
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="application!=null and application!=''">
+        AND APPLICATION = #{application}
+      </if>
+      <if test="categoryId!=null and categoryId!=''">
+        AND CATEGORY_ID = #{categoryId}
+      </if>
+      <if test="categoryName!=null and categoryName!=''">
+        AND CATEGORY_NAME = #{categoryName}
+      </if>
+      <if test="code!=null and code!=''">
+        AND CODE = #{code}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="linkUrl!=null and linkUrl!=''">
+        AND LINK_URL = #{linkUrl}
+      </if>
+      <if test="imgUrl!=null and imgUrl!=''">
+        AND IMG_URL = #{imgUrl}
+      </if>
+      <if test="roleGroup!=null and roleGroup!=''">
+        AND ROLE_GROUP = #{roleGroup}
+      </if>
+      <if test="parentId!=null and parentId!=''">
+        AND PARENT_ID = #{parentId}
+      </if>
+      <if test="memo1!=null and memo1!=''">
+        AND MEMO1 = #{memo1}
+      </if>
+      <if test="memo2!=null and memo2!=''">
+        AND MEMO2 = #{memo2}
+      </if>
+      <if test="memo3!=null and memo3!=''">
+        AND MEMO3 = #{memo3}
+      </if>
+      <if test="numberCol1!=null and numberCol1!=''">
+        AND NUMBER_COL1 = #{numberCol1}
+      </if>
+      <if test="numberCol2!=null and numberCol2!=''">
+        AND NUMBER_COL2 = #{numberCol2}
+      </if>
+      <if test="numberCol3!=null and numberCol3!=''">
+        AND NUMBER_COL3 = #{numberCol3}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByDto" parameterType="com.example.sqlite.model.CodeMaster" resultMap="CodeMasterResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      CODE_MASTER
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="application!=null and application!=''">
+        AND APPLICATION = #{application}
+      </if>
+      <if test="categoryId!=null and categoryId!=''">
+        AND CATEGORY_ID = #{categoryId}
+      </if>
+      <if test="categoryName!=null and categoryName!=''">
+        AND CATEGORY_NAME = #{categoryName}
+      </if>
+      <if test="code!=null and code!=''">
+        AND CODE = #{code}
+      </if>
+      <if test="name!=null and name!=''">
+        AND NAME = #{name}
+      </if>
+      <if test="linkUrl!=null and linkUrl!=''">
+        AND LINK_URL = #{linkUrl}
+      </if>
+      <if test="imgUrl!=null and imgUrl!=''">
+        AND IMG_URL = #{imgUrl}
+      </if>
+      <if test="roleGroup!=null and roleGroup!=''">
+        AND ROLE_GROUP = #{roleGroup}
+      </if>
+      <if test="parentId!=null and parentId!=''">
+        AND PARENT_ID = #{parentId}
+      </if>
+      <if test="memo1!=null and memo1!=''">
+        AND MEMO1 = #{memo1}
+      </if>
+      <if test="memo2!=null and memo2!=''">
+        AND MEMO2 = #{memo2}
+      </if>
+      <if test="memo3!=null and memo3!=''">
+        AND MEMO3 = #{memo3}
+      </if>
+      <if test="numberCol1!=null and numberCol1!=''">
+        AND NUMBER_COL1 = #{numberCol1}
+      </if>
+      <if test="numberCol2!=null and numberCol2!=''">
+        AND NUMBER_COL2 = #{numberCol2}
+      </if>
+      <if test="numberCol3!=null and numberCol3!=''">
+        AND NUMBER_COL3 = #{numberCol3}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+      LIMIT ${startRow} , ${pageSize}
+  </select>
+
+  <insert id="insert" parameterType="com.example.sqlite.model.CodeMaster" >
+    INSERT INTO CODE_MASTER(
+    <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+    <include refid="insert_column_list"></include>
+    ) VALUES (
+       #{id}
+      , #{application}
+      , #{categoryId}
+      , #{categoryName}
+      , #{code}
+      , #{name}
+      , #{linkUrl}
+      , #{imgUrl}
+      , #{roleGroup}
+      , #{parentId}
+      , #{memo1}
+      , #{memo2}
+      , #{memo3}
+      , #{numberCol1}
+      , #{numberCol2}
+      , #{numberCol3}
+    )
+  </insert>
+
+  <delete id="delete">
+    DELETE FROM CODE_MASTER WHERE ID = #{id}
+  </delete>
+
+  <update id="update" parameterType="com.example.sqlite.model.CodeMaster" >
+    UPDATE
+      CODE_MASTER
+    <set>
+      <if test="id!=null and id!=''">
+        ID = #{id},
+      </if>
+      <if test="application!=null and application!=''">
+        APPLICATION = #{application},
+      </if>
+      <if test="categoryId!=null and categoryId!=''">
+        CATEGORY_ID = #{categoryId},
+      </if>
+      <if test="categoryName!=null and categoryName!=''">
+        CATEGORY_NAME = #{categoryName},
+      </if>
+      <if test="code!=null and code!=''">
+        CODE = #{code},
+      </if>
+      <if test="name!=null and name!=''">
+        NAME = #{name},
+      </if>
+      <if test="linkUrl!=null and linkUrl!=''">
+        LINK_URL = #{linkUrl},
+      </if>
+      <if test="imgUrl!=null and imgUrl!=''">
+        IMG_URL = #{imgUrl},
+      </if>
+      <if test="roleGroup!=null and roleGroup!=''">
+        ROLE_GROUP = #{roleGroup},
+      </if>
+      <if test="parentId!=null and parentId!=''">
+        PARENT_ID = #{parentId},
+      </if>
+      <if test="memo1!=null and memo1!=''">
+        MEMO1 = #{memo1},
+      </if>
+      <if test="memo2!=null and memo2!=''">
+        MEMO2 = #{memo2},
+      </if>
+      <if test="memo3!=null and memo3!=''">
+        MEMO3 = #{memo3},
+      </if>
+      <if test="numberCol1!=null and numberCol1!=''">
+        NUMBER_COL1 = #{numberCol1},
+      </if>
+      <if test="numberCol2!=null and numberCol2!=''">
+        NUMBER_COL2 = #{numberCol2},
+      </if>
+      <if test="numberCol3!=null and numberCol3!=''">
+        NUMBER_COL3 = #{numberCol3},
+      </if>
+    </set>
+    WHERE
+      ID = #{id}
+  </update>
+
+  <select id="selectOneByUniqueKey" resultMap="CodeMasterResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      CODE_MASTER
+    <where>
+    </where>
+  </select>
+
+  <select id="customQuary" parameterType="com.example.sqlite.model.CodeMaster" resultType="com.example.sqlite.model.CodeMaster">
+    SELECT
+       ${selectQuary}
+    FROM
+      CODE_MASTER
+    <if test="joinPart!=null">
+        ${joinPart}
+    </if>
+    <where>
+        1 = 1
+        <if test="condition!=null">
+         AND ${condition}
+        </if>
+    </where>
+    <if test="groupBy!=null">
+      GROUP BY ${groupBy}
+    </if>
+    <if test="having!=null">
+      HAVING ${having}
+    </if>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+  </select>
+
+</mapper>
+

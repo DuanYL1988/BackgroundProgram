@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.sqlite.repository.TableInfoRepository" >
+  <!-- ResultMap -->
+  <resultMap id="TableInfoResultMap" type="com.example.sqlite.model.TableInfo" >
+    <result column="ID" property="id" jdbcType="INTEGER" />
+    <result column="TABLE_NAME" property="tableName" jdbcType="VARCHAR" />
+    <result column="COL_NAME" property="colName" jdbcType="VARCHAR" />
+    <result column="COL_NAME_CH" property="colNameCh" jdbcType="VARCHAR" />
+    <result column="COL_JAVA_NAME" property="colJavaName" jdbcType="VARCHAR" />
+    <result column="COL_TYPE" property="colType" jdbcType="VARCHAR" />
+    <result column="COL_LENGTH" property="colLength" jdbcType="INTEGER" />
+    <result column="COL_PK_FLG" property="colPkFlg" jdbcType="INTEGER" />
+    <result column="COL_NOTNULL_FLG" property="colNotnullFlg" jdbcType="INTEGER" />
+    <result column="COL_INPUTTYPE" property="colInputtype" jdbcType="VARCHAR" />
+    <result column="COL_INSERTABLE" property="colInsertable" jdbcType="INTEGER" />
+    <result column="COL_UPDATEABLE" property="colUpdateable" jdbcType="INTEGER" />
+    <result column="COL_FIFTERABLE" property="colFifterable" jdbcType="INTEGER" />
+    <result column="COL_DISABLE_FLG" property="colDisableFlg" jdbcType="INTEGER" />
+    <result column="COL_LIST_DISABLE_FLAG" property="colListDisableFlag" jdbcType="INTEGER" />
+    <result column="COL_CODE" property="colCode" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="select_column_list">
+    `ID`
+    ,`TABLE_NAME`
+    ,`COL_NAME`
+    ,`COL_NAME_CH`
+    ,`COL_JAVA_NAME`
+    ,`COL_TYPE`
+    ,`COL_LENGTH`
+    ,`COL_PK_FLG`
+    ,`COL_NOTNULL_FLG`
+    ,`COL_INPUTTYPE`
+    ,`COL_INSERTABLE`
+    ,`COL_UPDATEABLE`
+    ,`COL_FIFTERABLE`
+    ,`COL_DISABLE_FLG`
+    ,`COL_LIST_DISABLE_FLAG`
+    ,`COL_CODE`
+  </sql>
+
+  <sql id="insert_column_list">
+    `ID`
+    ,`TABLE_NAME`
+    ,`COL_NAME`
+    ,`COL_NAME_CH`
+    ,`COL_JAVA_NAME`
+    ,`COL_TYPE`
+    ,`COL_LENGTH`
+    ,`COL_PK_FLG`
+    ,`COL_NOTNULL_FLG`
+    ,`COL_INPUTTYPE`
+    ,`COL_INSERTABLE`
+    ,`COL_UPDATEABLE`
+    ,`COL_FIFTERABLE`
+    ,`COL_DISABLE_FLG`
+    ,`COL_LIST_DISABLE_FLAG`
+    ,`COL_CODE`
+  </sql>
+
+  <select id="selectOneById" resultMap="TableInfoResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      TABLE_INFO
+    WHERE
+      ID = #{id}
+  </select>
+
+  <select id="getCountByDto" parameterType="com.example.sqlite.model.TableInfo" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM TABLE_INFO
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="tableName!=null and tableName!=''">
+        AND TABLE_NAME = #{tableName}
+      </if>
+      <if test="colName!=null and colName!=''">
+        AND COL_NAME = #{colName}
+      </if>
+      <if test="colNameCh!=null and colNameCh!=''">
+        AND COL_NAME_CH = #{colNameCh}
+      </if>
+      <if test="colJavaName!=null and colJavaName!=''">
+        AND COL_JAVA_NAME = #{colJavaName}
+      </if>
+      <if test="colType!=null and colType!=''">
+        AND COL_TYPE = #{colType}
+      </if>
+      <if test="colLength!=null and colLength!=''">
+        AND COL_LENGTH = #{colLength}
+      </if>
+      <if test="colPkFlg!=null and colPkFlg!=''">
+        AND COL_PK_FLG = #{colPkFlg}
+      </if>
+      <if test="colNotnullFlg!=null and colNotnullFlg!=''">
+        AND COL_NOTNULL_FLG = #{colNotnullFlg}
+      </if>
+      <if test="colInputtype!=null and colInputtype!=''">
+        AND COL_INPUTTYPE = #{colInputtype}
+      </if>
+      <if test="colInsertable!=null and colInsertable!=''">
+        AND COL_INSERTABLE = #{colInsertable}
+      </if>
+      <if test="colUpdateable!=null and colUpdateable!=''">
+        AND COL_UPDATEABLE = #{colUpdateable}
+      </if>
+      <if test="colFifterable!=null and colFifterable!=''">
+        AND COL_FIFTERABLE = #{colFifterable}
+      </if>
+      <if test="colDisableFlg!=null and colDisableFlg!=''">
+        AND COL_DISABLE_FLG = #{colDisableFlg}
+      </if>
+      <if test="colListDisableFlag!=null and colListDisableFlag!=''">
+        AND COL_LIST_DISABLE_FLAG = #{colListDisableFlag}
+      </if>
+      <if test="colCode!=null and colCode!=''">
+        AND COL_CODE = #{colCode}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByDto" parameterType="com.example.sqlite.model.TableInfo" resultMap="TableInfoResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      TABLE_INFO
+    <where>
+      1 = 1
+      <if test="id!=null and id!=''">
+        AND ID = #{id}
+      </if>
+      <if test="tableName!=null and tableName!=''">
+        AND TABLE_NAME = #{tableName}
+      </if>
+      <if test="colName!=null and colName!=''">
+        AND COL_NAME = #{colName}
+      </if>
+      <if test="colNameCh!=null and colNameCh!=''">
+        AND COL_NAME_CH = #{colNameCh}
+      </if>
+      <if test="colJavaName!=null and colJavaName!=''">
+        AND COL_JAVA_NAME = #{colJavaName}
+      </if>
+      <if test="colType!=null and colType!=''">
+        AND COL_TYPE = #{colType}
+      </if>
+      <if test="colLength!=null and colLength!=''">
+        AND COL_LENGTH = #{colLength}
+      </if>
+      <if test="colPkFlg!=null and colPkFlg!=''">
+        AND COL_PK_FLG = #{colPkFlg}
+      </if>
+      <if test="colNotnullFlg!=null and colNotnullFlg!=''">
+        AND COL_NOTNULL_FLG = #{colNotnullFlg}
+      </if>
+      <if test="colInputtype!=null and colInputtype!=''">
+        AND COL_INPUTTYPE = #{colInputtype}
+      </if>
+      <if test="colInsertable!=null and colInsertable!=''">
+        AND COL_INSERTABLE = #{colInsertable}
+      </if>
+      <if test="colUpdateable!=null and colUpdateable!=''">
+        AND COL_UPDATEABLE = #{colUpdateable}
+      </if>
+      <if test="colFifterable!=null and colFifterable!=''">
+        AND COL_FIFTERABLE = #{colFifterable}
+      </if>
+      <if test="colDisableFlg!=null and colDisableFlg!=''">
+        AND COL_DISABLE_FLG = #{colDisableFlg}
+      </if>
+      <if test="colListDisableFlag!=null and colListDisableFlag!=''">
+        AND COL_LIST_DISABLE_FLAG = #{colListDisableFlag}
+      </if>
+      <if test="colCode!=null and colCode!=''">
+        AND COL_CODE = #{colCode}
+      </if>
+      <if test="condition!=null and condition!=''">
+        ${condition}
+      </if>
+    </where>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+      LIMIT ${startRow} , ${pageSize}
+  </select>
+
+  <insert id="insert" parameterType="com.example.sqlite.model.TableInfo" >
+    INSERT INTO TABLE_INFO(
+    <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+    <include refid="insert_column_list"></include>
+    ) VALUES (
+       #{id}
+      , #{tableName}
+      , #{colName}
+      , #{colNameCh}
+      , #{colJavaName}
+      , #{colType}
+      , #{colLength}
+      , #{colPkFlg}
+      , #{colNotnullFlg}
+      , #{colInputtype}
+      , #{colInsertable}
+      , #{colUpdateable}
+      , #{colFifterable}
+      , #{colDisableFlg}
+      , #{colListDisableFlag}
+      , #{colCode}
+    )
+  </insert>
+
+  <delete id="delete">
+    DELETE FROM TABLE_INFO WHERE ID = #{id}
+  </delete>
+
+  <update id="update" parameterType="com.example.sqlite.model.TableInfo" >
+    UPDATE
+      TABLE_INFO
+    <set>
+      <if test="id!=null and id!=''">
+        ID = #{id},
+      </if>
+      <if test="tableName!=null and tableName!=''">
+        TABLE_NAME = #{tableName},
+      </if>
+      <if test="colName!=null and colName!=''">
+        COL_NAME = #{colName},
+      </if>
+      <if test="colNameCh!=null and colNameCh!=''">
+        COL_NAME_CH = #{colNameCh},
+      </if>
+      <if test="colJavaName!=null and colJavaName!=''">
+        COL_JAVA_NAME = #{colJavaName},
+      </if>
+      <if test="colType!=null and colType!=''">
+        COL_TYPE = #{colType},
+      </if>
+      <if test="colLength!=null and colLength!=''">
+        COL_LENGTH = #{colLength},
+      </if>
+      <if test="colPkFlg!=null and colPkFlg!=''">
+        COL_PK_FLG = #{colPkFlg},
+      </if>
+      <if test="colNotnullFlg!=null and colNotnullFlg!=''">
+        COL_NOTNULL_FLG = #{colNotnullFlg},
+      </if>
+      <if test="colInputtype!=null and colInputtype!=''">
+        COL_INPUTTYPE = #{colInputtype},
+      </if>
+      <if test="colInsertable!=null and colInsertable!=''">
+        COL_INSERTABLE = #{colInsertable},
+      </if>
+      <if test="colUpdateable!=null and colUpdateable!=''">
+        COL_UPDATEABLE = #{colUpdateable},
+      </if>
+      <if test="colFifterable!=null and colFifterable!=''">
+        COL_FIFTERABLE = #{colFifterable},
+      </if>
+      <if test="colDisableFlg!=null and colDisableFlg!=''">
+        COL_DISABLE_FLG = #{colDisableFlg},
+      </if>
+      <if test="colListDisableFlag!=null and colListDisableFlag!=''">
+        COL_LIST_DISABLE_FLAG = #{colListDisableFlag},
+      </if>
+      <if test="colCode!=null and colCode!=''">
+        COL_CODE = #{colCode},
+      </if>
+    </set>
+    WHERE
+      ID = #{id}
+  </update>
+
+  <select id="selectOneByUniqueKey" resultMap="TableInfoResultMap">
+    SELECT
+      <include refid="select_column_list"></include>
+    FROM 
+      TABLE_INFO
+    <where>
+      <if test="tableName!=null and tableName!=''">
+        AND TABLE_NAME = #{tableName}
+      </if>
+      <if test="colName!=null and colName!=''">
+        AND COL_NAME = #{colName}
+      </if>
+    </where>
+  </select>
+
+  <select id="customQuary" parameterType="com.example.sqlite.model.TableInfo" resultType="com.example.sqlite.model.TableInfo">
+    SELECT
+       ${selectQuary}
+    FROM
+      TABLE_INFO
+    <if test="joinPart!=null">
+        ${joinPart}
+    </if>
+    <where>
+        1 = 1
+        <if test="condition!=null">
+         AND ${condition}
+        </if>
+    </where>
+    <if test="groupBy!=null">
+      GROUP BY ${groupBy}
+    </if>
+    <if test="having!=null">
+      HAVING ${having}
+    </if>
+    <if test="orderBy!=null">
+      ORDER BY ${orderBy}
+    </if>
+  </select>
+
+</mapper>
+

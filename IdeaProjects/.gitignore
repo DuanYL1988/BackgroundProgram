@@ -1,0 +1,6 @@
+### IntelliJ IDEA ###
+.idea
+
+/**/.mvn
+/**/.vscode
+vue3-project/node_modules/
