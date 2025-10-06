@@ -1,6 +1,6 @@
 ### IntelliJ IDEA ###
 .idea
-
+*.iml
 /**/.mvn
 /**/.vscode
 vue3-project/node_modules/

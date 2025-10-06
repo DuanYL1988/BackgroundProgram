@@ -3,26 +3,27 @@ import CrawlerUtils
 import DBUtil
 import copy
 import time
+from datetime import datetime
 
 # 数据名称
 TABLE_NAME = "FIREEMBLEM_HERO"
 # 基本URL
 result = DBUtil.SearchOne("configration", "base_url,img_url,wait_time,list_url", {"table_name": TABLE_NAME})
+maxDate = datetime.strptime(DBUtil.SearchOne(TABLE_NAME, "max(RELEASE_DATE)", {})[0], "%Y-%m-%d")
 BASE_URL = result[0]
 BASE_IMG_URL = result[1]
 SLEEP_TIME = result[2]
 LIST_URL = result[3]
-
 # 中途开始
-BREAK_POINT = 106
+BREAK_POINT = 190
 # 图片下载Flag
-DOWNLOAD_FLAG = False
+DOWNLOAD_FLAG = True
 # 数据集合
 MODEL_LIST = []
 # 单独爬取 "Lyn:_Brave_Lady"
-FILTER_NAMES = ["Alfonse: Prince of Askr"]
+FILTER_NAMES = ["Freyja: Parallel Hearts"]
 # 覆盖flag
-OVERWRITE_FLAG = True
+OVERWRITE_FLAG = False
 # 数据模型
 DATA_MODEL = {
     "ID" : "" # 主键ID
@@ -106,7 +107,7 @@ def getDateList(listUrl):
         # Step.2-1 单独取得数据
         if len(FILTER_NAMES) > 0 :
             if detailUrl in FILTER_NAMES:
-                print(detailUrl)
+                # print(detailUrl)
                 DATA_LIST.append(getDetail(detailUrl))
         # 从条件中取得
         else:
@@ -114,8 +115,6 @@ def getDateList(listUrl):
             # 中途开始
             if  index+2 > BREAK_POINT:
                 DATA_LIST.append(getDetail(detailUrl))
-                print("rest 5 second")
-                time.sleep(SLEEP_TIME)
     # 4. 持久化数据
     # ExcelUtils.writeData(TABLE_NAME, DATA_LIST, CodeList)
 
@@ -157,7 +156,7 @@ def getDetail(detailUrl):
         getFlag = False
         if "Rarities" in title:
             rarity = thElement.find_next_sibling().text
-            print(rarity)
+            # print(rarity)
             data["RARITY"] = rarity[0:1]
             data["PICK_FLAG"] = "1" if "5" == rarity else "0" if "3" == rarity else ""
             # 英雄类型(响心,魔器,...)
@@ -166,6 +165,15 @@ def getDetail(detailUrl):
             elif "Emblem" in rarity:
                 data["HERO_TYPE"] = "Emblem:纹章士"
             getFlag = True
+        # 实装时间
+        elif "Release Date" in title and not getFlag :
+            data["RELEASE_DATE"] = thElement.find_next_sibling().find("time").text
+            getFlag = True
+            releaseDate = datetime.strptime(data["RELEASE_DATE"], "%Y-%m-%d")
+            print(releaseDate)
+            if releaseDate < maxDate and len(FILTER_NAMES) == 0:
+                print("发布时间点已登录")
+                return
         # 武器类型
         elif "Weapon" in title and not getFlag :
             weaponInfo = thElement.find_next_sibling().find("img").get("data-image-key").split("_")
@@ -177,10 +185,6 @@ def getDetail(detailUrl):
         # 移动类型
         elif "Move" in title and not getFlag :
             data["MOVE_TYPE"] = thElement.find_next_sibling().find("a").get("title")
-            getFlag = True
-        # 实装时间
-        elif "Release Date" in title and not getFlag :
-            data["RELEASE_DATE"] = thElement.find_next_sibling().find("time").text
             getFlag = True
         # 作品
         elif "Entry" in title and not getFlag :
@@ -274,7 +278,12 @@ def getDetail(detailUrl):
         DBUtil.doInsertOrUpdate(TABLE_NAME, data, {"ID" : data["ID"]})
     except Exception as e:
         print(e)
-        print("DB更新发生异常:", data["IMG_NAME"])    
+        print("DB更新发生异常:", data["IMG_NAME"])
+    print(data["IMG_NAME"])
+    DBUtil.downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":data["IMG_NAME"]})
+    # 休息5秒
+    print("rest 5 second")
+    time.sleep(SLEEP_TIME)
 
 def getWeaponSkillInfo(skillDirtMap, race):
     # 单个英雄技能组
@@ -358,9 +367,12 @@ def getDetailMisc(data, detailUrl, InternalId):
 
     # 解析异常
     if len(data["CUT_IN_IMG"]) > 2:
-        data["CUT_IN_IMG"] = "exception:" + str(len(data["CUT_IN_IMG"]))
+        # data["CUT_IN_IMG"] = "exception:" + str(len(data["CUT_IN_IMG"]))
+        data["CUT_IN_IMG"] = "[]"
+    print(data["SPRITE_IMG"])
     if len(data["SPRITE_IMG"]) > 20:
-        data["SPRITE_IMG"] = "exception:" + str(len(data["SPRITE_IMG"]))
+        # data["CUT_IN_IMG"] = "exception:" + str(len(data["CUT_IN_IMG"]))
+        data["SPRITE_IMG"] = "[]"
     return
     
 '''
@@ -455,7 +467,7 @@ else:
 # 下载图片
 for key in FILTER_NAMES:
     key = key.replace(":","").replace(" ","_")
-    DBUtil.downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":key})
+    #DBUtil.downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":key})
 
 # 关闭数据库连接
 DBUtil.closeConnection()

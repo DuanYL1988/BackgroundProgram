@@ -165,7 +165,6 @@ def downloadFehImgFromDB(tableName, condition):
     result = SearchOne(tableName, "IMG_NAME, FACE_IMG, STAGE_IMG, CUT_IN_IMG, SPRITE_IMG, ART_IMG", condition)
     if result is None:
         return
-
     configration = SearchOne("configration", "img_url,wait_time,LOCAL_DIRECTORY", {"table_name": tableName})
     # 头像
     imgHost = [configration[0],result[0]]
@@ -180,11 +179,14 @@ def downloadFehImgFromDB(tableName, condition):
     editListImg(dataModel, "cutIn", imgHost, result[3], cutInImgDirt, fileNames)
     spriteImgDirt = []
     spriteSrc = []
+    print(result)
+    # 还没有cutin的时候
     for src in json.loads(result[4]):
         netSrc = f"{src[:5]}{result[0]}_Mini_Unit_{src[5:]}"
         spriteSrc.append(netSrc)
         spriteImgDirt.append(f"Mini_Unit_{src[5:]}")
-    # editListImg(dataModel, "sprite", imgHost, result[4],spriteSrc, spriteImgDirt)
+    # TODO 图片url转换后规则未解析
+    #editListImg(dataModel, "sprite", imgHost, result[4],spriteSrc, spriteImgDirt)
 
     print(CrawlerUtils.formateJSON(dataModel))
     targetPath = configration[2] + result[0] + "\\"
