@@ -51,6 +51,13 @@ public class TableInfoServiceImpl {
         List<TableInfo> filterColumns = tableinfoRepository.selectByDto(condition);
         result.put("filterColumns", filterColumns);
 
+        // 一览表示部分
+        TableInfoDto condition2 = new TableInfoDto();
+        condition2.setTableName(tableName);
+        condition2.setColListDisableFlag("1");
+        List<TableInfo> listColumns = tableinfoRepository.selectByDto(condition2);
+        result.put("listColumns", listColumns);
+
         // 配置信息
         Configration configInfo = configRepository.selectOneByUniqueKey(tableName);
         result.put("config", configInfo);

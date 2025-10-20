@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable() //关闭csrf
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 不通过Session获取SecurityContext
             .and().authorizeRequests()
-                .antMatchers("/login", "/regist", "/*").anonymous() // 放行
+                .antMatchers("/login", "/regist").anonymous() // 放行, "/*"
                 .anyRequest().authenticated(); // 其余请求都需要验证
 
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);

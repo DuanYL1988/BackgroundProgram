@@ -34,16 +34,9 @@ public class ControllerTester {
 
     @Before
     public void init() throws Exception {
-        AccountDto param = new AccountDto();
-        param.setUsername("admin");
-        param.setPassword("1");
-
-        String json = objectMapper.writeValueAsString(param);
-        System.out.println("JSON：" + json);
-
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .content("{\"username\":\"admin\",\"password\":\"1\"}"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -71,7 +64,19 @@ public class ControllerTester {
 
         String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
         System.out.println("响应内容：" + responseContent);
-
     }
 
+    @Test
+    public void getFehListTest() throws Exception {
+        String json = "{\"nameCn\":\"琳\"}";
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/fireemblem/getList")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .header("Authorization", token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        System.out.println("响应内容：" + responseContent);
+    }
 }
