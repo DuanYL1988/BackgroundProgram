@@ -18,6 +18,9 @@
         <result column="COL_FIFTERABLE" property= "colFifterable" jdbcType= "VARCHAR"/>
         <result column="COL_DISABLE_FLG" property= "colDisableFlg" jdbcType= "VARCHAR"/>
         <result column="COL_LIST_DISABLE_FLAG" property= "colListDisableFlag" jdbcType= "VARCHAR"/>
+        <result column="COL_LIST_WIDTH" property= "colListWidth" jdbcType= "VARCHAR"/>
+        <result column="COL_INPUT_WIDTH" property= "colInputWidth" jdbcType= "VARCHAR"/>
+        <result column="COL_SORT" property= "colSort" jdbcType= "VARCHAR"/>
         <result column="COL_CODE" property= "colCode" jdbcType= "VARCHAR"/>
         <result column="COL_DEFAULT" property= "colDefault" jdbcType= "VARCHAR"/>
     </resultMap>
@@ -39,6 +42,9 @@
         , COL_FIFTERABLE
         , COL_DISABLE_FLG
         , COL_LIST_DISABLE_FLAG
+        , COL_LIST_WIDTH
+        , COL_INPUT_WIDTH
+        , COL_SORT
         , COL_CODE
         , COL_DEFAULT
     </sql>
@@ -60,9 +66,21 @@
         , COL_FIFTERABLE
         , COL_DISABLE_FLG
         , COL_LIST_DISABLE_FLAG
+        , COL_LIST_WIDTH
+        , COL_INPUT_WIDTH
+        , COL_SORT
         , COL_CODE
         , COL_DEFAULT
     </sql>
+
+    <!-- 通过ID查找唯一一条记录 -->
+    <select id="selectOneById" resultMap="TableInfoResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM TABLE_INFO
+        WHERE
+            ID = #{id}
+    </select>
 
     <!-- 根据条件取得件数 -->
     <select id="getCountByDto" parameterType="com.example.mysql.dto.TableInfoDto" resultType="java.lang.Integer">
@@ -157,10 +175,18 @@
         , #{colFifterable}
         , #{colDisableFlg}
         , #{colListDisableFlag}
+        , #{colListWidth}
+        , #{colInputWidth}
+        , #{colSort}
         , #{colCode}
         , #{colDefault}
         )
     </insert>
+
+    <!-- 删除数据 -->
+    <delete id="delete">
+        DELETE FROM TABLE_INFO WHERE ID = #{id}
+    </delete>
 
     <!-- 更新数据 -->
     <update id="update" parameterType="com.example.mysql.model.TableInfo" >

@@ -49,6 +49,15 @@ public class TableInfo {
     /** 一览表示flag */
     private String colListDisableFlag;
 
+    /** 一览宽度 */
+    private String colListWidth;
+
+    /** 输入宽度 */
+    private String colInputWidth;
+
+    /** 排序 */
+    private String colSort;
+
     /** 类型Code */
     private String colCode;
 
