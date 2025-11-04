@@ -31,15 +31,15 @@ public class MenuServiceImpl {
         if (!"ADMIN".equals(user.getApplication().toUpperCase())) {
             condition.setApplication(user.getApplication());
             // 部门分组
-            if (!"ADMIN".equals(user.getGroupName().toUpperCase())) {
-                condition.setCompGroup(user.getGroupName());
+            if (!"ADMIN".equals(user.getRoleId().toUpperCase())) {
+                condition.setCompGroup(user.getRoleId());
             }
         }
         // 全部菜单取得
         List<Menu> menuList = menuDao.selectByDto(condition);
         for (Menu menu : menuList) {
             // 根据父菜单名分组
-            String groupName = menu.getCompGroup();
+            String groupName = menu.getParentId();
             List<Menu> childMenu = menuGroup.get(groupName);
             if (null == childMenu) {
                 childMenu = new ArrayList<>();

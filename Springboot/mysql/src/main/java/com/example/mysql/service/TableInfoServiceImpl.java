@@ -1,5 +1,7 @@
 package com.example.mysql.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +9,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import com.example.mysql.dto.CodeMasterDto;
@@ -35,6 +40,9 @@ public class TableInfoServiceImpl {
     @Autowired
     ConfigrationRepository configRepository;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
     /**
      * 取得通用的检索信息和列表表示信息
      *
@@ -55,6 +63,7 @@ public class TableInfoServiceImpl {
         TableInfoDto condition2 = new TableInfoDto();
         condition2.setTableName(tableName);
         condition2.setColListDisableFlag("1");
+        condition.setOrderBy("COL_SORT");
         List<TableInfo> listColumns = tableinfoRepository.selectByDto(condition2);
         result.put("listColumns", listColumns);
 
@@ -80,6 +89,20 @@ public class TableInfoServiceImpl {
             codeList.add(code);
             codeMap.put(columns.getCategoryId(),codeList);
         }
+
+        // 名称列表
+        String query = "SELECT DISTINCT NAME_CN,NAME,NAME_JP FROM " + tableName + ";";
+        List<Code> nameList = jdbcTemplate.query(query, new Object[]{}, new RowMapper<Code>() {
+            @Override
+            public Code mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Code result = new Code();
+                result.setCategory("NAME");
+                result.setCode(rs.getString("NAME"));
+                result.setValue(rs.getString("NAME_CN")+"_"+rs.getString("NAME_JP")+"_"+rs.getString("NAME"));
+                return result;
+            }
+        });
+        codeMap.put("NAME",nameList);
 
         result.put("direct", codeMap);
         // 返回结果

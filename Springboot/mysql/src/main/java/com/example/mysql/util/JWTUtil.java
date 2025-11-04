@@ -31,7 +31,7 @@ public class JWTUtil {
                 .withClaim("name", account.getUsername())
                 .withClaim("app", account.getApplication())
                 .withClaim("company", account.getCompany())
-                .withClaim("role", account.getGroupName())
+                .withClaim("role", account.getRoleId())
                 .withClaim("id", account.getId() + "")
                 .withExpiresAt(new Date(System.currentTimeMillis() + limitTime)).sign(Algorithm.HMAC256(signature));
     }
@@ -61,7 +61,7 @@ public class JWTUtil {
         result.setId(Integer.parseInt(claims.get("id").asString()));
         result.setUsername(claims.get("name").asString());
         result.setApplication(claims.get("app").asString());
-        result.setGroupName(claims.get("role").asString());
+        result.setRoleId(claims.get("role").asString());
         result.setCompany(claims.get("company").asString());
         return result;
     }
