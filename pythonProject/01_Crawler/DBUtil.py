@@ -59,6 +59,12 @@ def getCount(table, condition):
     print(f"<== SUCCESS count:{count}")
     return count
 
+def getColumnListByIndex(query,index):
+    resultList = []
+    for result in doSearchQuery(query):
+        resultList.append(result[index])
+    return resultList
+
 def doSearchQuery(selectQuery):
     cursor = connection.cursor()
     print("==> 开始执行SQL :" + selectQuery)
@@ -122,11 +128,23 @@ def doUpdate(table, data, pkInfo):
             valuesPart.append(value)
     query = query[0:-2] + concatConditionQuery(pkInfo)
     data = (valuesPart)
-    print(f"==> 开始执行Update Query:")
     cursor.execute(query, data)
-    print(f"<== 更新成功:{cursor.rowcount}件")
+    print(f"==> 开始执行Update Query:{cursor.statement}")
+    print(f"<== 更新成功:{cursor.arraysize}件")
     cursor.close()
     connection.commit()
+
+def doDelete(table, pkInfo):
+    count = getCount(table, pkInfo)
+    if count > 1 or count == 0:
+        print(f"满足该条件数据{count}件,请确认条件")
+        return
+    cursor = connection.cursor()
+    query = f"DELETE FROM {table} " + concatConditionQuery(pkInfo)
+    cursor.execute(query)
+    print(f"==> 开始执行Delete Query:{query}")
+    cursor.close()
+    connection.commit()    
 
 def closeConnection():
     connection.close()
@@ -153,7 +171,7 @@ def updateCrawlerMaster(masterDataDir):
 爬虫执行过程中编辑数据
 '''
 def editMasterData(FULL_MASTERDATA, key, subkey, editData):
-    masterData = {key + "-" +subkey : CrawlerUtils.initData(MASTER_MODEL, editData)}
+    masterData = {key : CrawlerUtils.initData(MASTER_MODEL, editData)}
     for attr in editData:
         masterData[attr] = editData[attr]
     FULL_MASTERDATA[key].update(masterData)
@@ -197,16 +215,25 @@ def downloadFehImgFromDB(tableName, condition):
         CrawlerUtils.downloadImage(targetPath, imgData["name"], imgData["src"], False)
 
 def editListImg(dataModel, attrNm, imgHost, imgNameStr, srcMpNames, fileNames):
+    dataModel[attrNm] = [] # 初始化
     if "[" in imgNameStr and "]" in imgNameStr:
-       imgSrcList = json.loads(imgNameStr)
-       if len(imgSrcList) > 0:
-           dataModel[attrNm] = [] # 初始化
-           for index,stageSrc in enumerate(imgSrcList):
-               mpName = srcMpNames[index] if len(srcMpNames) > index else ""
-               dataModel[attrNm].append({
+        imgSrcList = json.loads(imgNameStr)
+        if len(imgSrcList) > 0:
+            for index,stageSrc in enumerate(imgSrcList):
+                # 神装英雄
+                if(index > len(fileNames)-1):
+                    return
+                mpName = srcMpNames[index] if len(srcMpNames) > index else ""
+                skinIndex = index
+                skinName = ""
+                if index > 3:
+                    skinIndex = skinIndex - 4
+                    skinName = f"{fileNames[skinIndex]}(new)"
+                else:
+                    skinName = f"{fileNames[skinIndex]}"
+                dataModel[attrNm].append({
                    "src": f"{imgHost[0]}{stageSrc}{imgHost[1]}{mpName}"
-                   , "name": f"{fileNames[index]}"
-               })
+                   , "name": skinName
+                })
 
 #downloadFehImgFromDB("FIREEMBLEM_HERO", {"NAME":"Tiki"})
-print("aaa")

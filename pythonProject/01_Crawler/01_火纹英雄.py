@@ -1,8 +1,10 @@
 # 通用工具类
+from ast import Or
 import CrawlerUtils
 import DBUtil
 import copy
 import time
+import re
 from datetime import datetime
 
 # 数据名称
@@ -10,18 +12,20 @@ TABLE_NAME = "FIREEMBLEM_HERO"
 # 基本URL
 result = DBUtil.SearchOne("configration", "base_url,img_url,wait_time,list_url", {"table_name": TABLE_NAME})
 maxDate = datetime.strptime(DBUtil.SearchOne(TABLE_NAME, "max(RELEASE_DATE)", {})[0], "%Y-%m-%d")
+maxDate = datetime.strptime("2015-01-01", "%Y-%m-%d")
 BASE_URL = result[0]
 BASE_IMG_URL = result[1]
 SLEEP_TIME = result[2]
 LIST_URL = result[3]
 # 中途开始
-BREAK_POINT = 190
+BREAK_POINT = 0
 # 图片下载Flag
-DOWNLOAD_FLAG = True
+DOWNLOAD_FLAG = False
 # 数据集合
 MODEL_LIST = []
 # 单独爬取 "Lyn:_Brave_Lady"
-FILTER_NAMES = ["Freyja: Parallel Hearts"]
+FILTER_NAMES = ["Eir:_Life_Ascendant"]
+FILTER_NAMES = DBUtil.getColumnListByIndex("SELECT CONCAT(NAME,REPLACE(IMG_NAME,NAME,':')) AS KEYWORD FROM FIREEMBLEM_HERO WHERE HERO_TYPE LIKE 'PID_%'",0)
 # 覆盖flag
 OVERWRITE_FLAG = False
 # 数据模型
@@ -104,10 +108,10 @@ def getDateList(listUrl):
     # Step.3 取得详细内容
     for index, trElement in enumerate(tableTrArr):
         detailUrl = trElement.find_all("a")[0].get("title")
-        # Step.2-1 单独取得数据
-        if len(FILTER_NAMES) > 0 :
-            if detailUrl in FILTER_NAMES:
-                # print(detailUrl)
+        # Step.2-1 单独取得数据     print("run here")
+        if len(FILTER_NAMES) > 0 and "" != FILTER_NAMES[0]:
+            if detailUrl.replace(" ","_") in FILTER_NAMES:
+                print(detailUrl)
                 DATA_LIST.append(getDetail(detailUrl))
         # 从条件中取得
         else:
@@ -126,11 +130,7 @@ def getDetail(detailUrl):
     data["IMG_NAME"] = detailUrl.replace(":", "").replace(" ", "_")
     data["LIMIT_PLUS"] = 0
     data["DRAGON_FLOWER"] = 0
-    # 是否已经登录过
-    existFlag = DBUtil.getCount(table=TABLE_NAME, condition= {"IMG_NAME" : data["IMG_NAME"]})
-    if existFlag > 0 and OVERWRITE_FLAG == False:
-        print("当前数据已经存在!")
-        return
+
     detailHtml = CrawlerUtils.getDomFromUrl(BASE_URL + detailUrl, "detail.html")
     # 头像
     imgKey = detailUrl.replace(":", "").replace(" ", "_").replace("'","") + "_Face_FC.webp"
@@ -149,56 +149,74 @@ def getDetail(detailUrl):
     for element in imgDivs:
         data["STAGE_IMG"].append(CrawlerUtils.getSrcFromImgElement(element.find("img"))[0:5])
     # 基本信息
-    InternalId = ""
     for thElement in baseInfoTable.find_all("th"):
         title = thElement.text
         # 稀有度
-        getFlag = False
         if "Rarities" in title:
             rarity = thElement.find_next_sibling().text
-            # print(rarity)
+            print(rarity.replace(" ",""))
             data["RARITY"] = rarity[0:1]
             data["PICK_FLAG"] = "1" if "5" == rarity else "0" if "3" == rarity else ""
+            if rarity[0:1] == "3" or rarity[0:1] == "2":
+                print(f"太辣鸡了不登录{rarity}")
+                deleteData(data["IMG_NAME"])
+                return
             # 英雄类型(响心,魔器,...)
             if "Attuned" in rarity:
                 data["HERO_TYPE"] = "Attuned:响心"
             elif "Emblem" in rarity:
                 data["HERO_TYPE"] = "Emblem:纹章士"
-            getFlag = True
+            elif "Duo" in rarity:
+                data["HERO_TYPE"] = "Duo:连翼"
+            elif "Rearmed" in rarity:
+                data["HERO_TYPE"] = "Rearmed:魔器"
+            elif "Legendary" in rarity:
+                data["HERO_TYPE"] = "Legendary:传承"
+            elif "Harmonized" in rarity:
+                data["HERO_TYPE"] = "Harmonized:双界"
+            elif "Mythic" in rarity:
+                data["HERO_TYPE"] = "Mythic:神階"
+            elif "Ascended" in rarity:
+                data["HERO_TYPE"] = "Ascended:開花"                
+                
         # 实装时间
-        elif "Release Date" in title and not getFlag :
+        elif "Release Date" in title  :
             data["RELEASE_DATE"] = thElement.find_next_sibling().find("time").text
-            getFlag = True
             releaseDate = datetime.strptime(data["RELEASE_DATE"], "%Y-%m-%d")
-            print(releaseDate)
-            if releaseDate < maxDate and len(FILTER_NAMES) == 0:
+            # 不是单独爬取的话,已登录最大时间之前数据不解析
+            if releaseDate < maxDate and (len(FILTER_NAMES) == 0 or ""==FILTER_NAMES[0]):
                 print("发布时间点已登录")
                 return
         # 武器类型
-        elif "Weapon" in title and not getFlag :
+        elif "Weapon" in title :
             weaponInfo = thElement.find_next_sibling().find("img").get("data-image-key").split("_")
             data["COLOR"] = weaponInfo[2]
             weaponType = weaponInfo[3].split(".")[0]
             data["WEAPON_TYPE"] = thElement.find_next_sibling().find("a").get("title")
             data["RACE"] = "Dragon" if "Breath" == weaponType else "Beast" if "Beast" == weaponType else "Human"
-            getFlag = True
         # 移动类型
-        elif "Move" in title and not getFlag :
+        elif "Move" in title :
             data["MOVE_TYPE"] = thElement.find_next_sibling().find("a").get("title")
-            getFlag = True
         # 作品
-        elif "Entry" in title and not getFlag :
+        elif "Entry" in title :
             data["ENTRY"] = thElement.find_next_sibling().find_all("a")[-1].get("title").replace("Fire Emblem: ","").replace("Fire Emblem ","")
-            getFlag = True
-        elif "Ally Internal ID" in title and not getFlag :
+        elif "Internal ID" in title and "Enemy" not in title :
             # 使用正则匹配数字
             InternalId = thElement.find_next_sibling().text
             data["ID"] = CrawlerUtils.matchStr(InternalId, r".*?\((\d+)\)")
-            getFlag = True
-        elif "Internal ID" in title and not getFlag :
-            # 使用正则匹配数字
-            InternalId = thElement.find_next_sibling().text
-            data["ID"] = CrawlerUtils.matchStr(InternalId, r".*?\((\d+)\)")
+            # 通过InternalId[PID_xxx(id)]来获取类型
+            heroType = CrawlerUtils.matchStr(InternalId, r"_(.*?)\(")
+            if "" == data["HERO_TYPE"]:
+                #text = heroType.replace(nameJp[1], "")
+                match = re.search(r'PID_(.*?) \(', InternalId)
+                if match:
+                    text = match.group(1)
+                    text = re.sub(r'[\u30A0-\u30FF]+', '', text)
+                    data["HERO_TYPE"] = text
+    if "" != data["HERO_TYPE"]:
+        print(data["ID"])
+        DBUtil.doUpdate(TABLE_NAME,{"HERO_TYPE":data["HERO_TYPE"]},{"IMG_NAME" : data["IMG_NAME"]})
+    return
 
     # 基础数值
     statusTds = detailDoc.find(id="Level_40_stats").find_parent().find_next_sibling().select("table > tbody > tr > td")[-6 :-1]
@@ -270,17 +288,23 @@ def getDetail(detailUrl):
     getWeaponSkillInfo(skillDirt, data["RACE"])
 
     # 取得MISC情报
-    getDetailMisc(data, detailUrl, InternalId)
+    getDetailMisc(data, detailUrl)
+
+    # 是否已经登录过
+    condition = {"IMG_NAME" : data["IMG_NAME"]}
+    existFlag = DBUtil.getCount(table=TABLE_NAME, condition = condition)
 
     # DB登录
     try:
-        print("Insert Data")
         DBUtil.doInsertOrUpdate(TABLE_NAME, data, {"ID" : data["ID"]})
     except Exception as e:
         print(e)
         print("DB更新发生异常:", data["IMG_NAME"])
-    print(data["IMG_NAME"])
-    DBUtil.downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":data["IMG_NAME"]})
+    
+    # 下载图片
+    if DOWNLOAD_FLAG:
+        print("开始下载图片:" + data["IMG_NAME"])
+        DBUtil.downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":data["IMG_NAME"]})
     # 休息5秒
     print("rest 5 second")
     time.sleep(SLEEP_TIME)
@@ -293,9 +317,10 @@ def getWeaponSkillInfo(skillDirtMap, race):
         # 有该技能时
         if skillData is not None :
             skillCd = skillData["SKILL_CODE"]
+            unionKey = {"SKILL_CATEGORY" : skillType, "SKILL_CODE": skillCd}
             # 验证DB中是否已经存在
-            if DBUtil.getCount(SKILL_TABLE, {"SKILL_CATEGORY" : skillType, "SKILL_CODE": skillCd}) > 0 :
-                continue
+            existCnt = DBUtil.getCount(SKILL_TABLE, unionKey)
+            # if existCnt == 0 :
             # 解析情报并登录
             skillDoc = CrawlerUtils.getDomFromUrlByCondition(BASE_URL + skillCd, "div", {"id": "mw-content-text"}, "error.html")
             langInfo = getLanguage(skillDoc)
@@ -304,7 +329,6 @@ def getWeaponSkillInfo(skillDirtMap, race):
                 skillData["SKILL_NAME_CN"] = langInfo["cn"]
                 skillData["SKILL_NAME_JP"] = langInfo["jp"]
             # 图片
-            skillData["SKILL_ICON"] = ""
             if skillType == "FE_WEAPON" and ("Dragon,Beast".find(race) < 0):
                 # 去除Code中特殊字符
                 keyword = CrawlerUtils.matchWeapon("Weapon " + skillCd)
@@ -314,13 +338,14 @@ def getWeaponSkillInfo(skillDirtMap, race):
                     divEle = skillDoc.find_all("table", attrs={"class": "wikitable default ibox"})[0] # 
                     imgElement = divEle.select("a > img")[0]
                 skillData["SKILL_ICON"] = CrawlerUtils.getSrcFromImgElement(imgElement)
-            
-            DBUtil.doInsert(SKILL_TABLE, skillData)
+            elif skillType == "FE_SKILL_A" or skillType == "FE_SKILL_B" or skillType == "FE_SKILL_C":
+                skillData["SKILL_ICON"] = skillDirtMap[skillType]["SKILL_ICON"]
+            DBUtil.doInsertOrUpdate(SKILL_TABLE, skillData, unionKey)
 
 '''
 取得MISC情报
 '''
-def getDetailMisc(data, detailUrl, InternalId):
+def getDetailMisc(data, detailUrl):
     # Misc
     detailMisc = CrawlerUtils.getDomFromUrlByCondition(BASE_URL + detailUrl + "/Misc", "div", {"class": "mw-parser-output"}, "detail2.html")
     # 称号
@@ -335,10 +360,6 @@ def getDetailMisc(data, detailUrl, InternalId):
     if "\u3000" in titleLang["jp"]:
         nameJp = titleLang["jp"].split("\u3000")
         data["NAME_JP"] = nameJp[1]
-        # 通过InternalId[PID_xxx(id)]来获取类型
-        heroType = CrawlerUtils.matchStr(InternalId, r"_(.*?)\(")
-        if "" == data["HERO_TYPE"]:
-            data["HERO_TYPE"] = heroType.replace(nameJp[1], "")
 
     # TODO 解析异常
     # CutIn
@@ -360,7 +381,7 @@ def getDetailMisc(data, detailUrl, InternalId):
         spriteImgBox = getImagesFromSpanTitle(detailMisc, "Sprites")
     for imgElement in spriteImgBox:
         imgSrc = CrawlerUtils.getSrcFromImgElement(imgElement)
-        print(f"Sprite:{imgSrc}")
+        #print(f"Sprite:{imgSrc}")
         if "Mini_Unit" in imgSrc:
             # {IMG_NAME}{"_Mini_Unit_"}XX.png
             data["SPRITE_IMG"].append(imgSrc.replace(data["IMG_NAME"],"").replace("_Mini_Unit_",""))
@@ -456,6 +477,9 @@ def getCodeListFromListPage(listUrl):
     for key in CODE_DIRT:
         codeList.append(CODE_DIRT[key])
         DBUtil.doInsert("CODE_MASTER", CODE_DIRT[key])
+
+def deleteData(imgName):
+    DBUtil.doDelete(TABLE_NAME,{"IMG_NAME":imgName})
 
 getCodeFlag = "F"
 if getCodeFlag == "True" :

@@ -24,6 +24,9 @@ import copy
 # from googletrans import Translator
 # pip install deep-translator
 from deep_translator import GoogleTranslator
+# 复制内容到内存
+# pip install pyperclip
+import pyperclip
 
 # 参数定义
 defEnCode = "utf-8"
@@ -33,13 +36,23 @@ headers = {
 # 访问间隔
 SLEEP_TIME = 30
 
+''' ======= 输出信息相关 ======== '''
+def copyJson(jsonObj):
+  pyperclip.copy(json.dumps(jsonObj, indent=2))
+  print("JSON格式化并复制到剪切板!")
+
+def printJson(jsonObj):
+  jsonStr = json.dumps(jsonObj, indent=2)
+  print(jsonStr)
+
+def copyText(copyStr):
+  pyperclip.copy(copyStr)
+
+''' ======= 谷歌翻译 ======== '''
 def googleTranslateEnToCn(searchWord):
   #return googleTranslate(searchWord, 'en', "zh-cn")
   return GoogleTranslator(source='auto', target='zh').translate(searchWord)
 
-'''
-谷歌翻译
-'''
 def googleTranslate(searchWord, from_lang, to_lang):
   from_lang = 'en' if "" == from_lang else from_lang
   to_lang = 'zh-cn' if "" == to_lang else from_lang
