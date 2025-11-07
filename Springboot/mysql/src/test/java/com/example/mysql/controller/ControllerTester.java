@@ -79,4 +79,14 @@ public class ControllerTester {
         String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
         System.out.println("响应内容：" + responseContent);
     }
+
+    @Test
+    public void testGetColumns() throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/systemconf/getColumnListByTblnm?tableName=FIREEMBLEM_HERO")
+                .header("Authorization", token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+        String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        System.out.println("响应内容：" + responseContent);
+    }
 }
