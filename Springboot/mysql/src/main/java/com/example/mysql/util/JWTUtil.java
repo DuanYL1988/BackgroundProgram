@@ -18,7 +18,7 @@ import com.example.mysql.model.LoginUser;
 
 public class JWTUtil {
     // 有效时间
-    private static final long limitTime = 1000 * 60 * 5;
+    private static final long limitTime = 1000 * 60 * 60;
     // 算法秘钥
     private static final String signature = "1234567890123456789012345678901234567890123";
 

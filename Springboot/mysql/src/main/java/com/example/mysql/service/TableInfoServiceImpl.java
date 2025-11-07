@@ -56,6 +56,7 @@ public class TableInfoServiceImpl {
         TableInfoDto condition = new TableInfoDto();
         condition.setTableName(tableName);
         condition.setColFifterable("1");
+        condition.setOrderBy("COL_SORT");
         List<TableInfo> filterColumns = tableinfoRepository.selectByDto(condition);
         result.put("filterColumns", filterColumns);
 
@@ -63,7 +64,7 @@ public class TableInfoServiceImpl {
         TableInfoDto condition2 = new TableInfoDto();
         condition2.setTableName(tableName);
         condition2.setColListDisableFlag("1");
-        condition.setOrderBy("COL_SORT");
+        condition2.setOrderBy("COL_SORT");
         List<TableInfo> listColumns = tableinfoRepository.selectByDto(condition2);
         result.put("listColumns", listColumns);
 
@@ -103,9 +104,31 @@ public class TableInfoServiceImpl {
             }
         });
         codeMap.put("NAME",nameList);
-
         result.put("direct", codeMap);
         // 返回结果
+        return result;
+    }
+
+    /**
+     * 取得表信息中的所有表名
+     * @return
+     */
+    public Map<String, Object> getTableList(){
+        String query = "SELECT TBL1.TABLE_NAME, MST.NAME FROM (" +
+                "SELECT DISTINCT TABLE_NAME FROM TABLE_INFO) TBL1 LEFT JOIN CODE_MASTER mst " +
+                "ON TBL1.TABLE_NAME = mst.CODE AND mst.CATEGORY_ID = 'TABLE_NAME'";
+        List<Code> tableList = jdbcTemplate.query(query, new Object[]{}, new RowMapper<Code>() {
+            @Override
+            public Code mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Code result = new Code();
+                result.setCode(rs.getString("TABLE_NAME"));
+                result.setValue(rs.getString("NAME"));
+                return result;
+            }
+        });
+        // 处理结果
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("tableList",tableList);
         return result;
     }
 

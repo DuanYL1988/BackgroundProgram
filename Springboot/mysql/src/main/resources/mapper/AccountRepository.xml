@@ -173,10 +173,9 @@
             <include refid="select_column_list"></include>
         FROM ACCOUNT
         <where>
-            AND LOGIN_NAME = #{loginName}
-            AND USERNAME = #{username}
-            AND TELPHONE = #{telphone}
-
+            LOGIN_NAME = #{loginName}
+            OR USERNAME = #{username}
+            OR TELPHONE = #{telphone}
         </where>
     </select>
 

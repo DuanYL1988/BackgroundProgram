@@ -39,6 +39,7 @@ public class AccountServiceImpl {
             LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
             Map<String, Object> json = new HashMap<>();
             json.put("token", JWTUtil.createJwt(loginUser));
+            json.put("user", loginUser);
             return CtrlCommon.success(json);
         }
     }
