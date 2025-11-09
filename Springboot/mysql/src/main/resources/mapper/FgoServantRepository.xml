@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.mysql.repository.FgoServantRepository" >
+    <!-- ResultMap -->
+    <resultMap id="FgoServantResultMap" type="com.example.mysql.model.FgoServant" >
+        <result column="ID" property= "id" jdbcType= "VARCHAR"/>
+        <result column="NAME" property= "name" jdbcType= "VARCHAR"/>
+        <result column="NAME_CN" property= "nameCn" jdbcType= "VARCHAR"/>
+        <result column="NAME_JP" property= "nameJp" jdbcType= "VARCHAR"/>
+        <result column="IMG_NAME" property= "imgName" jdbcType= "VARCHAR"/>
+        <result column="CLASS_TYPE" property= "classType" jdbcType= "VARCHAR"/>
+        <result column="RARITY" property= "rarity" jdbcType= "VARCHAR"/>
+        <result column="HERO_TYPE" property= "heroType" jdbcType= "VARCHAR"/>
+        <result column="GENDER" property= "gender" jdbcType= "VARCHAR"/>
+        <result column="ATTRS" property= "attrs" jdbcType= "VARCHAR"/>
+        <result column="SUB_ATTRS" property= "subAttrs" jdbcType= "VARCHAR"/>
+        <result column="TRAITS" property= "traits" jdbcType= "VARCHAR"/>
+        <result column="HP" property= "hp" jdbcType= "INTEGER"/>
+        <result column="ATTACT" property= "attact" jdbcType= "INTEGER"/>
+        <result column="EVENT_FLAG" property= "eventFlag" jdbcType= "VARCHAR"/>
+        <result column="SKILL_1" property= "skill1" jdbcType= "VARCHAR"/>
+        <result column="SKILL_2" property= "skill2" jdbcType= "VARCHAR"/>
+        <result column="SKILL_3" property= "skill3" jdbcType= "VARCHAR"/>
+        <result column="SKILL_EXTRA" property= "skillExtra" jdbcType= "VARCHAR"/>
+        <result column="EXTRA_TYPE" property= "extraType" jdbcType= "VARCHAR"/>
+        <result column="EXTRA_COLOR" property= "extraColor" jdbcType= "VARCHAR"/>
+        <result column="FACE_IMG" property= "faceImg" jdbcType= "VARCHAR"/>
+        <result column="DEFAULT_STAGE" property= "defaultStage" jdbcType= "INTEGER"/>
+        <result column="STAGE_IMG" property= "stageImg" jdbcType= "VARCHAR"/>
+        <result column="SKIN_IMG" property= "skinImg" jdbcType= "VARCHAR"/>
+        <result column="STAGE_NAME_LIST" property= "stageNameList" jdbcType= "VARCHAR"/>
+        <result column="SPRITE_IMG" property= "spriteImg" jdbcType= "VARCHAR"/>
+        <result column="ICON_IMG" property= "iconImg" jdbcType= "VARCHAR"/>
+        <result column="FORMATION_IMG" property= "formationImg" jdbcType= "VARCHAR"/>
+        <result column="EXPRESSION_SHEETS" property= "expressionSheets" jdbcType= "VARCHAR"/>
+        <result column="CRAFT_ESSENCES" property= "craftEssences" jdbcType= "VARCHAR"/>
+        <result column="ARTWORKS" property= "artworks" jdbcType= "VARCHAR"/>
+        <result column="ILLUSTRATIONS" property= "illustrations" jdbcType= "VARCHAR"/>
+        <result column="EMOJI" property= "emoji" jdbcType= "VARCHAR"/>
+        <result column="HERO_RANK" property= "heroRank" jdbcType= "VARCHAR"/>
+        <result column="PICK_FLAG" property= "pickFlag" jdbcType= "VARCHAR"/>
+        <result column="RELEASE_DATE" property= "releaseDate" jdbcType= "VARCHAR"/>
+    </resultMap>
+
+    <!-- 全字段检索 -->
+    <sql id="select_column_list">
+        ID
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , IMG_NAME
+        , CLASS_TYPE
+        , RARITY
+        , HERO_TYPE
+        , GENDER
+        , ATTRS
+        , SUB_ATTRS
+        , TRAITS
+        , HP
+        , ATTACT
+        , EVENT_FLAG
+        , SKILL_1
+        , SKILL_2
+        , SKILL_3
+        , SKILL_EXTRA
+        , EXTRA_TYPE
+        , EXTRA_COLOR
+        , FACE_IMG
+        , DEFAULT_STAGE
+        , STAGE_IMG
+        , SKIN_IMG
+        , STAGE_NAME_LIST
+        , SPRITE_IMG
+        , ICON_IMG
+        , FORMATION_IMG
+        , EXPRESSION_SHEETS
+        , CRAFT_ESSENCES
+        , ARTWORKS
+        , ILLUSTRATIONS
+        , EMOJI
+        , HERO_RANK
+        , PICK_FLAG
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 插入数据字段 -->
+    <sql id="insert_column_list">
+        ID
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , IMG_NAME
+        , CLASS_TYPE
+        , RARITY
+        , HERO_TYPE
+        , GENDER
+        , ATTRS
+        , SUB_ATTRS
+        , TRAITS
+        , HP
+        , ATTACT
+        , EVENT_FLAG
+        , SKILL_1
+        , SKILL_2
+        , SKILL_3
+        , SKILL_EXTRA
+        , EXTRA_TYPE
+        , EXTRA_COLOR
+        , FACE_IMG
+        , DEFAULT_STAGE
+        , STAGE_IMG
+        , SKIN_IMG
+        , STAGE_NAME_LIST
+        , SPRITE_IMG
+        , ICON_IMG
+        , FORMATION_IMG
+        , EXPRESSION_SHEETS
+        , CRAFT_ESSENCES
+        , ARTWORKS
+        , ILLUSTRATIONS
+        , EMOJI
+        , HERO_RANK
+        , PICK_FLAG
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 通过ID查找唯一一条记录 -->
+    <select id="selectOneById" resultMap="FgoServantResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM FGO_SERVANT
+        WHERE
+            ID = #{id}
+    </select>
+
+    <!-- 根据条件取得件数 -->
+    <select id="getCountByDto" parameterType="com.example.mysql.dto.FgoServantDto" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM FGO_SERVANT
+        <where>
+            1 = 1
+            <if test="nameJp!=null and nameJp!=''">
+                AND NAME_JP = #{nameJp}
+            </if>
+            <if test="rarity!=null and rarity!=''">
+                AND RARITY = #{rarity}
+            </if>
+            <if test="heroType!=null and heroType!=''">
+                AND HERO_TYPE = #{heroType}
+            </if>
+            <if test="gender!=null and gender!=''">
+                AND GENDER = #{gender}
+            </if>
+            <if test="attrs!=null and attrs!=''">
+                AND ATTRS = #{attrs}
+            </if>
+            <if test="subAttrs!=null and subAttrs!=''">
+                AND SUB_ATTRS = #{subAttrs}
+            </if>
+            <if test="eventFlag!=null and eventFlag!=''">
+                AND EVENT_FLAG = #{eventFlag}
+            </if>
+            <if test="extraColor!=null and extraColor!=''">
+                AND EXTRA_COLOR = #{extraColor}
+            </if>
+            <if test="faceImg!=null and faceImg!=''">
+                AND FACE_IMG = #{faceImg}
+            </if>
+            <if test="spriteImg!=null and spriteImg!=''">
+                AND SPRITE_IMG = #{spriteImg}
+            </if>
+            <if test="expressionSheets!=null and expressionSheets!=''">
+                AND EXPRESSION_SHEETS = #{expressionSheets}
+            </if>
+            <if test="craftEssences!=null and craftEssences!=''">
+                AND CRAFT_ESSENCES = #{craftEssences}
+            </if>
+            <if test="artworks!=null and artworks!=''">
+                AND ARTWORKS = #{artworks}
+            </if>
+            <if test="illustrations!=null and illustrations!=''">
+                AND ILLUSTRATIONS = #{illustrations}
+            </if>
+            <if test="emoji!=null and emoji!=''">
+                AND EMOJI = #{emoji}
+            </if>
+            <if test="pickFlag!=null and pickFlag!=''">
+                AND PICK_FLAG = #{pickFlag}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据条件取得一览 -->
+    <select id="selectByDto" parameterType="com.example.mysql.dto.FgoServantDto" resultMap="FgoServantResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM FGO_SERVANT
+        <where>
+            1 = 1
+            <if test="nameJp!=null and nameJp!=''">
+                AND NAME_JP = #{nameJp}
+            </if>
+            <if test="rarity!=null and rarity!=''">
+                AND RARITY = #{rarity}
+            </if>
+            <if test="heroType!=null and heroType!=''">
+                AND HERO_TYPE = #{heroType}
+            </if>
+            <if test="gender!=null and gender!=''">
+                AND GENDER = #{gender}
+            </if>
+            <if test="attrs!=null and attrs!=''">
+                AND ATTRS = #{attrs}
+            </if>
+            <if test="subAttrs!=null and subAttrs!=''">
+                AND SUB_ATTRS = #{subAttrs}
+            </if>
+            <if test="eventFlag!=null and eventFlag!=''">
+                AND EVENT_FLAG = #{eventFlag}
+            </if>
+            <if test="extraColor!=null and extraColor!=''">
+                AND EXTRA_COLOR = #{extraColor}
+            </if>
+            <if test="faceImg!=null and faceImg!=''">
+                AND FACE_IMG = #{faceImg}
+            </if>
+            <if test="spriteImg!=null and spriteImg!=''">
+                AND SPRITE_IMG = #{spriteImg}
+            </if>
+            <if test="expressionSheets!=null and expressionSheets!=''">
+                AND EXPRESSION_SHEETS = #{expressionSheets}
+            </if>
+            <if test="craftEssences!=null and craftEssences!=''">
+                AND CRAFT_ESSENCES = #{craftEssences}
+            </if>
+            <if test="artworks!=null and artworks!=''">
+                AND ARTWORKS = #{artworks}
+            </if>
+            <if test="illustrations!=null and illustrations!=''">
+                AND ILLUSTRATIONS = #{illustrations}
+            </if>
+            <if test="emoji!=null and emoji!=''">
+                AND EMOJI = #{emoji}
+            </if>
+            <if test="pickFlag!=null and pickFlag!=''">
+                AND PICK_FLAG = #{pickFlag}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+        <if test="orderBy!=null">
+            ORDER BY ${orderBy}
+        </if>
+            LIMIT ${startRow} , ${pageSize}
+    </select>
+
+    <!-- 新增一条数据 -->
+    <insert id="insert" parameterType="com.example.mysql.model.FgoServant" >
+        INSERT INTO FGO_SERVANT (
+        <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+        <include refid="insert_column_list"></include>
+        ) VALUES (
+        #{id}
+        , #{name}
+        , #{nameCn}
+        , #{nameJp}
+        , #{imgName}
+        , #{classType}
+        , #{rarity}
+        , #{heroType}
+        , #{gender}
+        , #{attrs}
+        , #{subAttrs}
+        , #{traits}
+        , #{hp}
+        , #{attact}
+        , #{eventFlag}
+        , #{skill1}
+        , #{skill2}
+        , #{skill3}
+        , #{skillExtra}
+        , #{extraType}
+        , #{extraColor}
+        , #{faceImg}
+        , #{defaultStage}
+        , #{stageImg}
+        , #{skinImg}
+        , #{stageNameList}
+        , #{spriteImg}
+        , #{iconImg}
+        , #{formationImg}
+        , #{expressionSheets}
+        , #{craftEssences}
+        , #{artworks}
+        , #{illustrations}
+        , #{emoji}
+        , #{heroRank}
+        , #{pickFlag}
+        , #{releaseDate}
+        )
+    </insert>
+
+    <!-- 删除数据 -->
+    <delete id="delete">
+        DELETE FROM FGO_SERVANT WHERE ID = #{id}
+    </delete>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.example.mysql.model.FgoServant" >
+        UPDATE FGO_SERVANT
+        <set>
+        <if test="nameCn!=null and nameCn!=''">
+            NAME_CN = #{nameCn},
+        </if>
+        <if test="nameJp!=null and nameJp!=''">
+            NAME_JP = #{nameJp},
+        </if>
+        <if test="imgName!=null and imgName!=''">
+            IMG_NAME = #{imgName},
+        </if>
+        <if test="rarity!=null and rarity!=''">
+            RARITY = #{rarity},
+        </if>
+        <if test="heroType!=null and heroType!=''">
+            HERO_TYPE = #{heroType},
+        </if>
+        <if test="gender!=null and gender!=''">
+            GENDER = #{gender},
+        </if>
+        <if test="attrs!=null and attrs!=''">
+            ATTRS = #{attrs},
+        </if>
+        <if test="subAttrs!=null and subAttrs!=''">
+            SUB_ATTRS = #{subAttrs},
+        </if>
+        <if test="traits!=null and traits!=''">
+            TRAITS = #{traits},
+        </if>
+        <if test="hp!=null and hp!=''">
+            HP = #{hp},
+        </if>
+        <if test="attact!=null and attact!=''">
+            ATTACT = #{attact},
+        </if>
+        <if test="eventFlag!=null and eventFlag!=''">
+            EVENT_FLAG = #{eventFlag},
+        </if>
+        <if test="skill1!=null and skill1!=''">
+            SKILL_1 = #{skill1},
+        </if>
+        <if test="skill2!=null and skill2!=''">
+            SKILL_2 = #{skill2},
+        </if>
+        <if test="skill3!=null and skill3!=''">
+            SKILL_3 = #{skill3},
+        </if>
+        <if test="skillExtra!=null and skillExtra!=''">
+            SKILL_EXTRA = #{skillExtra},
+        </if>
+        <if test="extraType!=null and extraType!=''">
+            EXTRA_TYPE = #{extraType},
+        </if>
+        <if test="extraColor!=null and extraColor!=''">
+            EXTRA_COLOR = #{extraColor},
+        </if>
+        <if test="faceImg!=null and faceImg!=''">
+            FACE_IMG = #{faceImg},
+        </if>
+        <if test="defaultStage!=null and defaultStage!=''">
+            DEFAULT_STAGE = #{defaultStage},
+        </if>
+        <if test="stageImg!=null and stageImg!=''">
+            STAGE_IMG = #{stageImg},
+        </if>
+        <if test="skinImg!=null and skinImg!=''">
+            SKIN_IMG = #{skinImg},
+        </if>
+        <if test="stageNameList!=null and stageNameList!=''">
+            STAGE_NAME_LIST = #{stageNameList},
+        </if>
+        <if test="spriteImg!=null and spriteImg!=''">
+            SPRITE_IMG = #{spriteImg},
+        </if>
+        <if test="iconImg!=null and iconImg!=''">
+            ICON_IMG = #{iconImg},
+        </if>
+        <if test="formationImg!=null and formationImg!=''">
+            FORMATION_IMG = #{formationImg},
+        </if>
+        <if test="expressionSheets!=null and expressionSheets!=''">
+            EXPRESSION_SHEETS = #{expressionSheets},
+        </if>
+        <if test="craftEssences!=null and craftEssences!=''">
+            CRAFT_ESSENCES = #{craftEssences},
+        </if>
+        <if test="artworks!=null and artworks!=''">
+            ARTWORKS = #{artworks},
+        </if>
+        <if test="illustrations!=null and illustrations!=''">
+            ILLUSTRATIONS = #{illustrations},
+        </if>
+        <if test="emoji!=null and emoji!=''">
+            EMOJI = #{emoji},
+        </if>
+        <if test="heroRank!=null and heroRank!=''">
+            HERO_RANK = #{heroRank},
+        </if>
+        <if test="pickFlag!=null and pickFlag!=''">
+            PICK_FLAG = #{pickFlag},
+        </if>
+
+        </set>
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 业务主键查找唯一值 -->
+    <select id="selectOneByUniqueKey" resultMap="FgoServantResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM FGO_SERVANT
+        <where>
+            AND ID = #{id}
+
+        </where>
+    </select>
+
+    <!-- 自定义查找 -->
+    <select id="customQuary" parameterType="com.example.mysql.dto.FgoServantDto" resultType="com.example.mysql.model.FgoServant">
+        SELECT
+             ${selectQuary}
+        FROM FGO_SERVANT
+        <if test="joinPart!=null">
+            ${joinPart}
+        </if>
+        <where>
+            1 = 1
+            <if test="condition!=null and condition!=''">
+             AND ${condition}
+            </if>
+        </where>
+        <if test="groupBy!=null and groupBy!=''">
+            GROUP BY ${groupBy}
+        </if>
+        <if test="having!=null and having!=''">
+            HAVING ${having}
+        </if>
+        <if test="orderBy!=null and orderBy!=''">
+            ORDER BY ${orderBy}
+        </if>
+    </select>
+</mapper>

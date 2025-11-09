@@ -4,6 +4,9 @@ import lombok.Data;
 
 @Data
 public class TableInfo {
+    /** 主键 */
+    private String id;
+
     /** 表名 */
     private String tableName;
 

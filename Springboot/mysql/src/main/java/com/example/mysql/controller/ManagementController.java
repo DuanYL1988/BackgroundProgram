@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.mysql.dto.BatchColumnDto;
+import com.example.mysql.dto.FgoServantDto;
 import com.example.mysql.dto.FireemblemHeroDto;
+import com.example.mysql.model.FgoServant;
 import com.example.mysql.model.FireemblemHero;
+import com.example.mysql.repository.FgoServantRepository;
 import com.example.mysql.repository.FireemblemHeroRepository;
 import com.example.mysql.service.ManagementServiceImpl;
 import com.example.mysql.service.TableInfoServiceImpl;
@@ -33,7 +36,7 @@ public class ManagementController {
     FireemblemHeroRepository fehDao;
 
     @Autowired
-    ManagementServiceImpl managementService;
+    FgoServantRepository fgoDao;
 
     @GetMapping("/getFilterColumns")
     public ResponseResult getFilterColumns(String tableName) {
@@ -52,12 +55,13 @@ public class ManagementController {
         return result;
     }
 
-    @PostMapping("/FIREEMBLEM_HERO/updatePickup")
-    public ResponseResult updatePickup(@RequestBody BatchColumnDto dto) {
-        // TODO
-        int updateCnt = managementService.updateFlagColumn(dto);
-        ResponseResult result = CtrlCommon.success(dto);
-        result.setMessage("批量更新成功,更新了"+updateCnt+"条数据!");
+    /**
+     * FGO一览检索Contorller
+     **/
+    @PostMapping("/FGO_SERVANT/getList")
+    public ResponseResult getFgoList(@RequestBody FgoServantDto dto) {
+        List<FgoServant> resultList = fgoDao.selectByDto(dto);
+        ResponseResult result = CtrlCommon.success(resultList);
         return result;
     }
 

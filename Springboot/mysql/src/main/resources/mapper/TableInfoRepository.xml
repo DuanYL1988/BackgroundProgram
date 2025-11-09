@@ -3,6 +3,7 @@
 <mapper namespace="com.example.mysql.repository.TableInfoRepository" >
     <!-- ResultMap -->
     <resultMap id="TableInfoResultMap" type="com.example.mysql.model.TableInfo" >
+        <result column="ID" property= "id" jdbcType= "VARCHAR"/>
         <result column="TABLE_NAME" property= "tableName" jdbcType= "VARCHAR"/>
         <result column="COL_NAME" property= "colName" jdbcType= "VARCHAR"/>
         <result column="COL_NAME_CH" property= "colNameCh" jdbcType= "VARCHAR"/>
@@ -27,7 +28,8 @@
 
     <!-- 全字段检索 -->
     <sql id="select_column_list">
-        TABLE_NAME
+        ID
+        , TABLE_NAME
         , COL_NAME
         , COL_NAME_CH
         , COL_CAMEL
@@ -51,7 +53,8 @@
 
     <!-- 插入数据字段 -->
     <sql id="insert_column_list">
-        TABLE_NAME
+        ID
+        , TABLE_NAME
         , COL_NAME
         , COL_NAME_CH
         , COL_CAMEL
@@ -160,7 +163,8 @@
         <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
         <include refid="insert_column_list"></include>
         ) VALUES (
-        #{tableName}
+        #{id}
+        , #{tableName}
         , #{colName}
         , #{colNameCh}
         , #{colCamel}
