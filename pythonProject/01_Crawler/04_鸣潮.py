@@ -173,6 +173,32 @@ def getSkillDocWithName(htmlDoc, elementId):
     extraEle = htmlDoc.find(attrs={"id":elementId}).parent
     return extraEle.find_next_sibling()
 
+
+def margeCn():
+	TABLE_NAME_CN = "WUTHERING_WAVE_RESONATOR_CN"
+	# DB取得配置信息
+	resultCn = DBUtil.SearchOne("configration", "BASE_URL,IMG_URL,WAIT_TIME,LIST_URL,LOCAL_DIRECTORY", {"table_name": TABLE_NAME_CN})
+	listDoc = CrawlerUtils.getDomFromUrlByCondition(listUrl, "table", {"id":"CardSelectTr"}, "list-CN.html")
+	pattern = (r'<tr class="divsort" data-param1="(?P<ATTRS>.*?)" data-param2="5" data-param3="(?P<WEAPON_TYPE>.*?)" data-param4="(?P<TAGS>.*?)">.*?'
+			   r'<div class="center"><div class="floatnone"><a href=".*?" title="共鸣者/(?P<NAME_CN>.*?)">.*?</tr>')
+	dataList = CrawlerUtils.getDataListByReg(str(listDoc), pattern)
+	#
+	MASTER_DATA = {'ATTRS':{}, 'WEAPON_TYPE': {}}
+	for dataCn in dataList:
+		detailUrl = resultCn + dataCn["NAME_CN"]
+		detailDoc = CrawlerUtils.getDomFromUrlByCondition(listUrl, "table", {}, "detail-CN.html")
+		// TODO
+		dbResultCn = DBUtil.SearchOne(TABLE_NAME, "BASE_URL,NAME,NAME_CN,ATTRS,WEAPON_TYPE", {"NAME_CN": dataCn["NAME_CN"]})
+		
+		masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'ATTRS', 'CATEGORY_NAME': '属性', 'CODE': dbResultCn[2], 'NAME': dataCn[""]}
+		DBUtil.editMasterData(MASTER_DATA, "ATTRS", data["ATTRS"], masterData)
+		masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'WEAPON_TYPE', 'CATEGORY_NAME': '属性', 'CODE': dbResultCn[3], 'NAME': dataCn[""]}
+		DBUtil.editMasterData(MASTER_DATA, "WEAPON_TYPE", data["WEAPON_TYPE"], masterData)
+		
+		DBUtil.doUpdate(TABLE_NAME,dataCn,{"NAME_CN":data["NAME_CN"]})
+		
+	DBUtil.updateCrawlerMaster(MASTER_DATA)
+
 # 爬取数据
 getDateList(LIST_URL)
 #CrawlerUtils.outputJsonCsv(OUTPUT_JSON_PATH,TABLE_NAME,DATA_LIST)
