@@ -158,23 +158,24 @@ def closeConnection():
 '''
 def updateCrawlerMaster(masterDataDir):
     now = datetime.now()
-    for key in masterDataDir:
-        for subKey in masterDataDir[key]:
-            keyinfo = subKey.split("-")
-            if len(keyinfo) > 2:
-                condition = {"APPLICATION": subKey.split("-")[0],"CATEGORY_ID":subKey.split("-")[1],"CODE":subKey.split("-")[2]}
-                masterData = CrawlerUtils.initData(masterDataDir[key][subKey], condition)
-                masterData["MEMO3"] = now.strftime("%Y-%m-%d %H:%M:%S")
-                doInsertOrUpdate("CODE_MASTER",masterData,condition)
+    for category in masterDataDir:
+        for code in masterDataDir[category]:
+            data = masterDataDir[category][code]
+            condition = {"APPLICATION":data["APPLICATION"],"CATEGORY_ID":category,"CODE":code}
+            data["MEMO3"] = now.strftime("%Y-%m-%d %H:%M:%S")
+            doInsertOrUpdate("CODE_MASTER",data,condition)
 
 '''
 爬虫执行过程中编辑数据
 '''
-def editMasterData(FULL_MASTERDATA, key, subkey, editData):
-    masterData = {key : CrawlerUtils.initData(MASTER_MODEL, editData)}
+def editMasterData(FULL_MASTERDATA, category, code, editData):
+    masterData = CrawlerUtils.initData(MASTER_MODEL, editData)
     for attr in editData:
         masterData[attr] = editData[attr]
-    FULL_MASTERDATA[key].update(masterData)
+    if code not in FULL_MASTERDATA[category]:
+        FULL_MASTERDATA[category][code] = masterData
+    else:
+        FULL_MASTERDATA[category][code].update(masterData)
 
 '''
 爬虫执行完后从DB读取数据下载图片

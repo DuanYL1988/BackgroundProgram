@@ -73,7 +73,7 @@ DATA_LIST = []
 
 # 各种字典
 CODE_MODEL = {
-    "APPLICATION" : "FEH",
+    "APPLICATION" : TABLE_NAME,
     "CATEGORY_ID" : "",
     "CATEGORY_NAME" : "",
     "CODE" : "",
@@ -216,7 +216,6 @@ def getDetail(detailUrl):
     if "" != data["HERO_TYPE"]:
         print(data["ID"])
         DBUtil.doUpdate(TABLE_NAME,{"HERO_TYPE":data["HERO_TYPE"]},{"IMG_NAME" : data["IMG_NAME"]})
-    return
 
     # 基础数值
     statusTds = detailDoc.find(id="Level_40_stats").find_parent().find_next_sibling().select("table > tbody > tr > td")[-6 :-1]

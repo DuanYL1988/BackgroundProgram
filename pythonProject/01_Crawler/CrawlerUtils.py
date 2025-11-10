@@ -247,16 +247,27 @@ def matchWeapon(str):
   matches = "".join(re.findall(pattern, str))
   return matches
 
+
+def matchHp(text):
+  result = ""
+  text = text.replace(",","")
+  text = text.replace(" / ","/")
+  match = re.search(r'\b\d{3,5}/\d{3,5}\b', text)
+  if match:
+    result = match.group()
+  return result
+
 '''
 下载图片
 '''
-def downloadImage(forlder, name, src, overWriteFlag):
+def downloadImage(forlder, name, src, overWriteFlag, pngFlag):
   src = src.replace("'","")
   # 取得网络图片
   img_resp = requests.get(src, headers=headers)
   # 扩展名
   extName = src.split(".")[-1]
-  extName = "png" if "webp" == extName else extName
+  if pngFlag:
+    extName = "png" if "webp" == extName else extName
   outputFileName = forlder + name + "." + extName
   # 不覆盖
   if os.path.exists(outputFileName) and overWriteFlag == False:
