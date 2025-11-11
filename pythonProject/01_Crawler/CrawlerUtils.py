@@ -138,6 +138,9 @@ def doPost(url, encode, params):
   resp.close()
   return json
 
+def transHtmlToDom(html_content):
+  return BeautifulSoup(html_content, "html.parser")
+
 '''
 输出到文件
 '''
@@ -246,16 +249,6 @@ def matchWeapon(str):
   pattern = r'[a-zA-Z0-9_ ]'
   matches = "".join(re.findall(pattern, str))
   return matches
-
-
-def matchHp(text):
-  result = ""
-  text = text.replace(",","")
-  text = text.replace(" / ","/")
-  match = re.search(r'\b\d{3,5}/\d{3,5}\b', text)
-  if match:
-    result = match.group()
-  return result
 
 '''
 下载图片

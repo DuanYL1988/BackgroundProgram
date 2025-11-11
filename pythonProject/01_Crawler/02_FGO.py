@@ -91,7 +91,6 @@ MASTER_DATA = {
 def getDateList(listUrl, rarity):
     # Step.1 发送请求取得DOM对象
     listDoc = CrawlerUtils.getDomFromUrlByCondition(listUrl, "table", {"class": "wikitable"}, "list.html")
-
     # Step.2 使用正则匹配
     dataList = listDoc.find_all("span", attrs={"class":"servant_icon"})
     for index, detailEle in enumerate(dataList):
@@ -157,72 +156,8 @@ def getDetail(data, urlName):
         else:
             # 灵衣图片
             data["SKIN_IMG"].append(imgSrc);
-    # 从者类型(拐,打手)
-    data["HERO_TYPE"] = ""
     # 性别
     data["GENDER"] = infoTrs[11].find("a").text
-    # 属性
-    attrs = ""
-    for tdEle in infoTrs[7].find("td").find_all("a"):
-        attr = tdEle.text
-        if "Attribute" != attr:
-            attrs = attrs + "," + attr
-            masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'ATTRS', 'CATEGORY_NAME': '属性', 'CODE': attr, 'IMG_URL': ''}
-            DBUtil.editMasterData(MASTER_DATA, "ATTRS", attr, masterData)
-    data["ATTRS"] = attrs[1:]
-    # 副属性
-    data["SUB_ATTR"] = ""
-    # 特性
-    traits = ""
-    for tdEle in infoTrs[12].find_all("a"):
-        trait = tdEle.text
-        if "Traits" != trait:
-            traits = traits + "," + trait
-            masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'TRAITS', 'CATEGORY_NAME': '特性', 'CODE': trait, 'IMG_URL': ''}
-            DBUtil.editMasterData(MASTER_DATA, "TRAITS", trait, masterData)
-    data["TRAITS"] = traits[1:]
-    # 生命值
-    hpAtkTr = infoTrs[3].find_all("td")
-    if data["ID"] not in ["S154"]:
-        hpTd = CrawlerUtils.matchHp(hpAtkTr[0].text)
-        if "/" not in hpTd:
-            hpAtkTr = infoTrs[2].find_all("td")
-            hpTd = CrawlerUtils.matchHp(hpAtkTr[0].text)
-        data["HP"] = hpTd.split("/")[1]
-        # 攻击
-        atkTd = CrawlerUtils.matchHp(hpAtkTr[1].text)
-        data["ATTACT"] = atkTd.split("/")[1]
-    # 活动从者
-    data["EVENT_FLAG"] = ""
-    # 主动技能
-    SkillDoc = getSkillDocWithName(detailDoc,"Active_Skills")
-    divList = SkillDoc.find_all("div",attrs={"class","wds-tab__content"})
-    if len(divList) == 3:
-        # 1技能
-        data["SKILL_1"] = getSkillTxt(divList[0])
-        data["SKILL_2"] = getSkillTxt(divList[1])
-        data["SKILL_3"] = getSkillTxt(divList[2])
-    else:
-        # 1技能 data["ID"] not in ["S037"]
-        data["SKILL_1"] = getSkillTxt(SkillDoc)
-        # 2技能
-        skill2Doc = SkillDoc.find_next_sibling()
-        data["SKILL_2"] = getSkillTxt(skill2Doc)
-        # 3技能
-        skill3Doc = skill2Doc.find_next_sibling()
-        data["SKILL_3"] = getSkillTxt(skill3Doc)
-    # 宝具名
-    extraEle = getSkillDocWithName(detailDoc,"Noble_Phantasm")
-    tableEles = extraEle.find("caption")
-    capDivList = tableEles.find_all("div",attrs={"class","wds-tab__content"})
-    if len(capDivList) > 0:
-        tableEles = capDivList[-1]
-    data["SKILL_EXTRA"] = tableEles.text.strip()
-    # 宝具颜色
-    imgEle = extraEle.find("img")
-    data["EXTRA_COLOR"] = imgEle.get("data-image-key").split(".")[0]
-    # 宝具类型(单体,全体)
-    data["EXTRA_TYPE"] = ""
 
     # 各种图片下载
     galleryDoc = CrawlerUtils.getDomFromUrlByCondition(f"{BASE_URL}Sub:{urlName}/Gallery" , "div", {"id": "mw-content-text"}, "gallery.html")

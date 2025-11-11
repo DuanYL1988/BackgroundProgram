@@ -2,6 +2,7 @@
 import CrawlerUtils
 import DBUtil
 import time
+import copy
 from datetime import datetime
 
 # 数据名称
@@ -29,6 +30,8 @@ OUTPUT_JSON_PATH = "D:\\Project\\htmlProject\\20_CrawlerResult\\WUTHERING_WAVE_R
 FILTER_NAMES = [""]
 # 中途开始
 BREAK_POINT = 0
+# 中文marge
+MARGE_FLAG = True
 # 下载flag
 DL_FLAG = False
 # 覆盖flag
@@ -55,6 +58,9 @@ DATA_MODEL = {
     , "SKILLS" : [] # 技能
     , "SKILLS_ICON" : [] # 技能图标
     , "EMOJI" : [] # 表情包
+    , "ARTWORKS" : [] #	艺术集
+    , "YT_VIDEOS" : [] # YT视频
+    , "SHORT_VIDEOS" : [] # YT短视频
     , "RELEASE_DATE" : "" # 实装日期
     , "VERSION" : "" # 版本信息
 }
@@ -147,64 +153,108 @@ def getDetail(data):
     attrImg = CrawlerUtils.getSrcFromImgElement(tdEle.find("img"))
     masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'WEAPON_TYPE', 'CATEGORY_NAME': '武器类型', 'CODE': data["WEAPON_TYPE"], 'IMG_URL': attrImg}
     DBUtil.editMasterData(MASTER_DATA, "WEAPON_TYPE", data["WEAPON_TYPE"], masterData)
-    print(MASTER_DATA)
-    # 词缀
-    data["TAGS"] = ""
-    # 势力
-    data["INFLUENCE"] = ""
-    # 出生地
-    data["BIRTH_PLACE"] = ""
-    # 生命
-    data["HP"] = ""
-    # 攻击
-    data["ATK"] = ""
-    # 防御
-    data["DEF"] = ""
-    # 技能
-    data["SKILLS"] = ""
     # 技能图标
-    data["SKILLS_ICON"] = ""
+    skillEle = getSkillDocWithName(detailDoc,"Forte")
+    imgBox = []
+    for imgEle in skillEle.find_all("img"):
+        imgSrc = CrawlerUtils.getSrcFromImgElement(imgEle)
+        if imgSrc not in data["SKILLS_ICON"]:
+            data["SKILLS_ICON"].append(imgSrc)
+    # 实装日期
+    tempEle = detailDoc.find("a",{"title":"Resonator/List"})
+    tempEle = tempEle.parent
+    tempEle = tempEle.find_next_sibling()
+    data["RELEASE_DATE"] = transReleaseDate(tempEle.next)
+    
+    # TODO 相册
+    # galleryUrl = f'{BASE_URL}{data["NAME"]}/Gallery'
+    # galleryDoc = CrawlerUtils.getDomFromUrlByCondition(galleryUrl, "div", {"id": "mw-content-text"}, "gallery.html")
     # 表情包
     data["EMOJI"] = ""
-    # 实装日期
-    data["RELEASE_DATE"] = ""
+    # 艺术集
+    data["ARTWORKS"] = ""
+    # YT视频
+    data["YT_VIDEOS"] = ""
+    # YT短视频	
+    data["SHORT_VIDEOS"] = ""
+
+def transReleaseDate(dataStr):
+    date_obj = datetime.strptime(dataStr, "%B %d, %Y")
+    return date_obj.strftime("%Y-%m-%d")
+
 
 def getSkillDocWithName(htmlDoc, elementId):
     extraEle = htmlDoc.find(attrs={"id":elementId}).parent
     return extraEle.find_next_sibling()
 
-
+'''
+匹配中文信息
+'''
 def margeCn():
-	TABLE_NAME_CN = "WUTHERING_WAVE_RESONATOR_CN"
-	# DB取得配置信息
-	resultCn = DBUtil.SearchOne("configration", "BASE_URL,IMG_URL,WAIT_TIME,LIST_URL,LOCAL_DIRECTORY", {"table_name": TABLE_NAME_CN})
-	listDoc = CrawlerUtils.getDomFromUrlByCondition(listUrl, "table", {"id":"CardSelectTr"}, "list-CN.html")
-	pattern = (r'<tr class="divsort" data-param1="(?P<ATTRS>.*?)" data-param2="5" data-param3="(?P<WEAPON_TYPE>.*?)" data-param4="(?P<TAGS>.*?)">.*?'
-			   r'<div class="center"><div class="floatnone"><a href=".*?" title="共鸣者/(?P<NAME_CN>.*?)">.*?</tr>')
-	dataList = CrawlerUtils.getDataListByReg(str(listDoc), pattern)
-	#
-	MASTER_DATA = {'ATTRS':{}, 'WEAPON_TYPE': {}}
-	for dataCn in dataList:
-		detailUrl = resultCn + dataCn["NAME_CN"]
-		detailDoc = CrawlerUtils.getDomFromUrlByCondition(listUrl, "table", {}, "detail-CN.html")
-		// TODO
-		dbResultCn = DBUtil.SearchOne(TABLE_NAME, "BASE_URL,NAME,NAME_CN,ATTRS,WEAPON_TYPE", {"NAME_CN": dataCn["NAME_CN"]})
-		
-		masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'ATTRS', 'CATEGORY_NAME': '属性', 'CODE': dbResultCn[2], 'NAME': dataCn[""]}
-		DBUtil.editMasterData(MASTER_DATA, "ATTRS", data["ATTRS"], masterData)
-		masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'WEAPON_TYPE', 'CATEGORY_NAME': '属性', 'CODE': dbResultCn[3], 'NAME': dataCn[""]}
-		DBUtil.editMasterData(MASTER_DATA, "WEAPON_TYPE", data["WEAPON_TYPE"], masterData)
-		
-		DBUtil.doUpdate(TABLE_NAME,dataCn,{"NAME_CN":data["NAME_CN"]})
-		
-	DBUtil.updateCrawlerMaster(MASTER_DATA)
+    TABLE_NAME_CN = "WUTHERING_WAVE_RESONATOR_CN"
+    # DB取得配置信息
+    resultCn = DBUtil.SearchOne("configration", "BASE_URL,IMG_URL,WAIT_TIME,LIST_URL,LOCAL_DIRECTORY", {"table_name": TABLE_NAME_CN})
+    listDoc = CrawlerUtils.getDomFromUrlByCondition(resultCn[3], "table", {"id":"CardSelectTr"}, "list-CN.html")
+    pattern = (r'<tr class="divsort" data-param1="(?P<ATTRS>.*?)".*?data-param3="(?P<WEAPON_TYPE>.*?)" data-param4="(?P<TAGS>.*?)">.*?'
+                 r'<div class="center"><div class="floatnone"><a href=".*?" title="共鸣者/(?P<NAME_CN>.*?)">.*?</tr>')
+    dataList = CrawlerUtils.getDataListByReg(str(listDoc), pattern)
+    for dataCn in dataList:
+        keyWd = dataCn["NAME_CN"]
+        if "漂泊者" in keyWd:
+            continue
+        detailUrl = f'{resultCn[0]}共鸣者/{keyWd}'
+        detailDoc = CrawlerUtils.getDomFromUrlByCondition(detailUrl, "div", {"id":"mw-content-text"}, "detail-CN.html")
+        infoDiv = detailDoc.find("div",attrs={"class":"col-md-8 column"})
+        tblEle = infoDiv.find("table",attrs={"class":"table"})
+        trList = tblEle.find_all("tr")
+        # 出生地
+        dataCn["BIRTH_PLACE"] = trList[7].find_all("td")[1].text.strip()
+        # 势力
+        dataCn["INFLUENCE"] = trList[8].find_all("td")[1].text.strip()
+        
+        statusDiv = detailDoc.find("div",attrs={"class":"col-md-12 column"})
+        tblEle = statusDiv.find("table")
+        lastTr = tblEle.find_all("tr")[-2]
+        tdList = lastTr.find_all("td")
+        # 生命
+        dataCn["HP"] = tdList[1].text.strip()
+        # 攻击
+        dataCn["ATK"] = tdList[3].text.strip()
+        # 防御
+        dataCn["DEF"] = tdList[5].text.strip()
+        # 技能
+        skillDiv = detailDoc.find("div",{"class":"col-md-12 column visible-lg"})
+        skLst = skillDiv.find_all("div",{"class":"skill-title-contnet"})
+        dataCn["SKILLS"] = (f'{getSkill(skLst[0])},{getSkill(skLst[1])},{getSkill(skLst[3])},{getSkill(skLst[2])}'
+                           f',{getSkill(skLst[-2])},{getSkill(skLst[-1])},{getSkill(skLst[4])},{getSkill(skLst[5])}')
+        print(dataCn["SKILLS"])
+        # Marge
+        dbResultCn = DBUtil.SearchOne(TABLE_NAME, "NAME,NAME_CN,ATTRS,WEAPON_TYPE", {"NAME_CN": keyWd})
+        masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'ATTRS', 'CATEGORY_NAME': '属性', 'CODE': dbResultCn[2], 'NAME': dataCn["ATTRS"]}
+        DBUtil.editMasterData(MASTER_DATA, "ATTRS", dbResultCn[2], masterData)
+        masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'WEAPON_TYPE', 'CATEGORY_NAME': '武器属性', 'CODE': dbResultCn[3], 'NAME': dataCn["WEAPON_TYPE"]}
+        DBUtil.editMasterData(MASTER_DATA, "WEAPON_TYPE", dbResultCn[3], masterData)
+        
+        # 还原
+        updataDate = copy.deepcopy(dataCn)
+        updataDate["ATTRS"] = ""
+        updataDate["WEAPON_TYPE"] = ""
+        DBUtil.doUpdate(TABLE_NAME,updataDate,{"NAME_CN":updataDate["NAME_CN"]})
+
+def getSkill(elementDoc):
+    targetEle = elementDoc.find_all("span")[-1]
+    return targetEle.text.strip()
 
 # 爬取数据
-getDateList(LIST_URL)
+if MARGE_FLAG :
+    margeCn()
+else:
+    getDateList(LIST_URL)
+
 #CrawlerUtils.outputJsonCsv(OUTPUT_JSON_PATH,TABLE_NAME,DATA_LIST)
 
 # 更新master信息
-DBUtil.updateCrawlerMaster(MASTER_DATA)
+#DBUtil.updateCrawlerMaster(MASTER_DATA)
 
 # 关闭数据库连接
 DBUtil.closeConnection()
