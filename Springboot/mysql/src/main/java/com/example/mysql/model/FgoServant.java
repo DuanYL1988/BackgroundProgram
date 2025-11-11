@@ -88,6 +88,9 @@ public class FgoServant {
     /** 头像图标立绘 */
     private String iconImg;
 
+    /** 对话框立绘 */
+    private String portraitsImg;
+
     /** 组队立绘 */
     private String formationImg;
 

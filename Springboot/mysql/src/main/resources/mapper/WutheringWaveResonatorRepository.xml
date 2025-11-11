@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.mysql.repository.WutheringWaveResonatorRepository" >
+    <!-- ResultMap -->
+    <resultMap id="WutheringWaveResonatorResultMap" type="com.example.mysql.model.WutheringWaveResonator" >
+        <result column="ID" property= "id" jdbcType= "VARCHAR"/>
+        <result column="NAME" property= "name" jdbcType= "VARCHAR"/>
+        <result column="NAME_CN" property= "nameCn" jdbcType= "VARCHAR"/>
+        <result column="NAME_JP" property= "nameJp" jdbcType= "VARCHAR"/>
+        <result column="FACE_IMG" property= "faceImg" jdbcType= "VARCHAR"/>
+        <result column="CARD_IMG" property= "cardImg" jdbcType= "VARCHAR"/>
+        <result column="SPRITE_IMG" property= "spriteImg" jdbcType= "VARCHAR"/>
+        <result column="POST_IMG" property= "postImg" jdbcType= "VARCHAR"/>
+        <result column="RARITY" property= "rarity" jdbcType= "VARCHAR"/>
+        <result column="ATTRS" property= "attrs" jdbcType= "VARCHAR"/>
+        <result column="WEAPON_TYPE" property= "weaponType" jdbcType= "VARCHAR"/>
+        <result column="TAGS" property= "tags" jdbcType= "VARCHAR"/>
+        <result column="INFLUENCE" property= "influence" jdbcType= "VARCHAR"/>
+        <result column="BIRTH_PLACE" property= "birthPlace" jdbcType= "VARCHAR"/>
+        <result column="HP" property= "hp" jdbcType= "VARCHAR"/>
+        <result column="ATK" property= "atk" jdbcType= "VARCHAR"/>
+        <result column="DEF" property= "def" jdbcType= "VARCHAR"/>
+        <result column="SKILLS" property= "skills" jdbcType= "VARCHAR"/>
+        <result column="SKILLS_ICON" property= "skillsIcon" jdbcType= "VARCHAR"/>
+        <result column="ARTWORKS" property= "artworks" jdbcType= "VARCHAR"/>
+        <result column="YT_VIDEOS" property= "ytVideos" jdbcType= "VARCHAR"/>
+        <result column="SHORT_VIDEOS" property= "shortVideos" jdbcType= "VARCHAR"/>
+        <result column="EMOJI" property= "emoji" jdbcType= "VARCHAR"/>
+        <result column="VERSION" property= "version" jdbcType= "VARCHAR"/>
+        <result column="RELEASE_DATE" property= "releaseDate" jdbcType= "VARCHAR"/>
+    </resultMap>
+
+    <!-- 全字段检索 -->
+    <sql id="select_column_list">
+        ID
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , FACE_IMG
+        , CARD_IMG
+        , SPRITE_IMG
+        , POST_IMG
+        , RARITY
+        , ATTRS
+        , WEAPON_TYPE
+        , TAGS
+        , INFLUENCE
+        , BIRTH_PLACE
+        , HP
+        , ATK
+        , DEF
+        , SKILLS
+        , SKILLS_ICON
+        , ARTWORKS
+        , YT_VIDEOS
+        , SHORT_VIDEOS
+        , EMOJI
+        , VERSION
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 插入数据字段 -->
+    <sql id="insert_column_list">
+        ID
+        , NAME
+        , NAME_CN
+        , NAME_JP
+        , FACE_IMG
+        , CARD_IMG
+        , SPRITE_IMG
+        , POST_IMG
+        , RARITY
+        , ATTRS
+        , WEAPON_TYPE
+        , TAGS
+        , INFLUENCE
+        , BIRTH_PLACE
+        , HP
+        , ATK
+        , DEF
+        , SKILLS
+        , SKILLS_ICON
+        , ARTWORKS
+        , YT_VIDEOS
+        , SHORT_VIDEOS
+        , EMOJI
+        , VERSION
+        , RELEASE_DATE
+    </sql>
+
+    <!-- 通过ID查找唯一一条记录 -->
+    <select id="selectOneById" resultMap="WutheringWaveResonatorResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM WUTHERING_WAVE_RESONATOR
+        WHERE
+            ID = #{id}
+    </select>
+
+    <!-- 根据条件取得件数 -->
+    <select id="getCountByDto" parameterType="com.example.mysql.dto.WutheringWaveResonatorDto" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM WUTHERING_WAVE_RESONATOR
+        <where>
+            1 = 1
+            <if test="name!=null and name!=''">
+                AND NAME = #{name}
+            </if>
+            <if test="attrs!=null and attrs!=''">
+                AND ATTRS = #{attrs}
+            </if>
+            <if test="weaponType!=null and weaponType!=''">
+                AND WEAPON_TYPE = #{weaponType}
+            </if>
+            <if test="artworks!=null and artworks!=''">
+                AND ARTWORKS = #{artworks}
+            </if>
+            <if test="ytVideos!=null and ytVideos!=''">
+                AND YT_VIDEOS = #{ytVideos}
+            </if>
+            <if test="shortVideos!=null and shortVideos!=''">
+                AND SHORT_VIDEOS = #{shortVideos}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据条件取得一览 -->
+    <select id="selectByDto" parameterType="com.example.mysql.dto.WutheringWaveResonatorDto" resultMap="WutheringWaveResonatorResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM WUTHERING_WAVE_RESONATOR
+        <where>
+            1 = 1
+            <if test="name!=null and name!=''">
+                AND NAME = #{name}
+            </if>
+            <if test="attrs!=null and attrs!=''">
+                AND ATTRS = #{attrs}
+            </if>
+            <if test="weaponType!=null and weaponType!=''">
+                AND WEAPON_TYPE = #{weaponType}
+            </if>
+            <if test="artworks!=null and artworks!=''">
+                AND ARTWORKS = #{artworks}
+            </if>
+            <if test="ytVideos!=null and ytVideos!=''">
+                AND YT_VIDEOS = #{ytVideos}
+            </if>
+            <if test="shortVideos!=null and shortVideos!=''">
+                AND SHORT_VIDEOS = #{shortVideos}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+        <if test="orderBy!=null">
+            ORDER BY ${orderBy}
+        </if>
+            LIMIT ${startRow} , ${pageSize}
+    </select>
+
+    <!-- 新增一条数据 -->
+    <insert id="insert" parameterType="com.example.mysql.model.WutheringWaveResonator" >
+        INSERT INTO WUTHERING_WAVE_RESONATOR (
+        <!-- <trim prefix='(' suffix=')' suffixOverrides=','> -->
+        <include refid="insert_column_list"></include>
+        ) VALUES (
+        #{id}
+        , #{name}
+        , #{nameCn}
+        , #{nameJp}
+        , #{faceImg}
+        , #{cardImg}
+        , #{spriteImg}
+        , #{postImg}
+        , #{rarity}
+        , #{attrs}
+        , #{weaponType}
+        , #{tags}
+        , #{influence}
+        , #{birthPlace}
+        , #{hp}
+        , #{atk}
+        , #{def}
+        , #{skills}
+        , #{skillsIcon}
+        , #{artworks}
+        , #{ytVideos}
+        , #{shortVideos}
+        , #{emoji}
+        , #{version}
+        , #{releaseDate}
+        )
+    </insert>
+
+    <!-- 删除数据 -->
+    <delete id="delete">
+        DELETE FROM WUTHERING_WAVE_RESONATOR WHERE ID = #{id}
+    </delete>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.example.mysql.model.WutheringWaveResonator" >
+        UPDATE WUTHERING_WAVE_RESONATOR
+        <set>
+        <if test="nameCn!=null and nameCn!=''">
+            NAME_CN = #{nameCn},
+        </if>
+        <if test="nameJp!=null and nameJp!=''">
+            NAME_JP = #{nameJp},
+        </if>
+        <if test="rarity!=null and rarity!=''">
+            RARITY = #{rarity},
+        </if>
+        <if test="attrs!=null and attrs!=''">
+            ATTRS = #{attrs},
+        </if>
+        <if test="weaponType!=null and weaponType!=''">
+            WEAPON_TYPE = #{weaponType},
+        </if>
+        <if test="tags!=null and tags!=''">
+            TAGS = #{tags},
+        </if>
+        <if test="influence!=null and influence!=''">
+            INFLUENCE = #{influence},
+        </if>
+        <if test="birthPlace!=null and birthPlace!=''">
+            BIRTH_PLACE = #{birthPlace},
+        </if>
+        <if test="hp!=null and hp!=''">
+            HP = #{hp},
+        </if>
+        <if test="atk!=null and atk!=''">
+            ATK = #{atk},
+        </if>
+        <if test="def!=null and def!=''">
+            DEF = #{def},
+        </if>
+        <if test="skills!=null and skills!=''">
+            SKILLS = #{skills},
+        </if>
+        <if test="artworks!=null and artworks!=''">
+            ARTWORKS = #{artworks},
+        </if>
+        <if test="ytVideos!=null and ytVideos!=''">
+            YT_VIDEOS = #{ytVideos},
+        </if>
+        <if test="shortVideos!=null and shortVideos!=''">
+            SHORT_VIDEOS = #{shortVideos},
+        </if>
+        <if test="version!=null and version!=''">
+            VERSION = #{version},
+        </if>
+        <if test="releaseDate!=null and releaseDate!=''">
+            RELEASE_DATE = #{releaseDate},
+        </if>
+        </set>
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 业务主键查找唯一值 -->
+    <select id="selectOneByUniqueKey" resultMap="WutheringWaveResonatorResultMap">
+        SELECT
+            <include refid="select_column_list"></include>
+        FROM WUTHERING_WAVE_RESONATOR
+        <where>
+            AND NAME_CN = #{nameCn}
+
+        </where>
+    </select>
+
+    <!-- 自定义查找 -->
+    <select id="customQuary" parameterType="com.example.mysql.dto.WutheringWaveResonatorDto" resultType="com.example.mysql.model.WutheringWaveResonator">
+        SELECT
+             ${selectQuary}
+        FROM WUTHERING_WAVE_RESONATOR
+        <if test="joinPart!=null">
+            ${joinPart}
+        </if>
+        <where>
+            1 = 1
+            <if test="condition!=null and condition!=''">
+             AND ${condition}
+            </if>
+        </where>
+        <if test="groupBy!=null and groupBy!=''">
+            GROUP BY ${groupBy}
+        </if>
+        <if test="having!=null and having!=''">
+            HAVING ${having}
+        </if>
+        <if test="orderBy!=null and orderBy!=''">
+            ORDER BY ${orderBy}
+        </if>
+    </select>
+</mapper>

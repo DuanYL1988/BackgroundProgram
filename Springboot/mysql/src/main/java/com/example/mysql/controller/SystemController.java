@@ -42,7 +42,7 @@ public class SystemController {
         // TODO
         int updateCnt = managementService.updateFlagColumn(dto);
         ResponseResult result = CtrlCommon.success(dto);
-        result.setMessage("批量更新成功,更新了"+updateCnt+"条数据!");
+        result.setMessage("Table:" + dto.getTableName()+ "批量更新成功,更新了"+updateCnt+"条数据!");
         return result;
     }
 }
