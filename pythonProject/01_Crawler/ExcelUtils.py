@@ -1,6 +1,8 @@
 import openpyxl
+import DBUtil
 # 爬虫数据写入的文件路径
 FULL_PATH = "D:\\Project\\00_Markdown\\80_VBA\\CrawlerData.xlsx"
+DDL_PATH = "D:\Projects\Tools\VBA\DDL.xlsx"
 
 def writeData(sheetName, dataList, codeMap):
     workbook = openpyxl.load_workbook(filename=FULL_PATH, read_only=False)
@@ -114,3 +116,46 @@ def outputFile(outputText, encode, fileName):
   with open(fileName, mode="w" , encoding=encode) as f:
     f.write(str(outputText))
   f.close()
+
+def updateDDLFromDB():
+    quary = '''SELECT
+                UCASE(TABLE_NAME)
+                , COLUMN_NAME
+                , COLUMN_COMMENT
+                , UCASE(MID(COLUMN_TYPE,1,INSTR(COLUMN_TYPE,'(')-1)) AS TYPE
+                , MID(LEFT(COLUMN_TYPE,LENGTH(COLUMN_TYPE)-1),INSTR(COLUMN_TYPE,'(')+1) AS LENGTH
+            FROM
+                information_schema.COLUMNS COLS 
+            WHERE
+                COLS.TABLE_NAME IN ( 
+                    SELECT
+                        TABLE_NAME 
+                    FROM
+                        information_schema.TABLES 
+                    WHERE
+                        TABLE_SCHEMA = 'duanyl'
+                )
+            ORDER BY 1'''
+    result = DBUtil.doSearchQuery(quary)
+    TABLE_COL_MP = {}
+    for rowData in result:
+        tblNm = rowData[0]
+        if tblNm not in TABLE_COL_MP:
+            TABLE_COL_MP[tblNm] = []
+        TABLE_COL_MP[tblNm].append(rowData[1:])
+
+    # 更新DDL
+    workbook = openpyxl.load_workbook(filename=DDL_PATH, read_only=False)
+    for tableName in TABLE_COL_MP:
+        targetSheet = workbook[tableName]
+        startRow = 4
+        for columnInfo in TABLE_COL_MP[tableName]:
+            print(f'{tableName} -> {columnInfo}')
+            targetSheet.cell(row=startRow, column=1).value = columnInfo[0]
+            targetSheet.cell(row=startRow, column=2).value = columnInfo[1]
+            targetSheet.cell(row=startRow, column=4).value = columnInfo[2]
+            targetSheet.cell(row=startRow, column=5).value = columnInfo[3]
+            startRow = startRow + 1
+    workbook.save(DDL_PATH)
+
+updateDDLFromDB()
