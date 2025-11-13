@@ -1,7 +1,9 @@
 package com.example.mysql.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class WutheringWaveResonatorDto extends ExpandCondition {
     /** 主键 */

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.org//DTD Mapper 3.0//EN" "http://MYBATIS.org/dtd/MYBATIS-3-mapper.dtd" >
+<mapper namespace="com.example.mysql.repository.CustomizeRepository" >
+    <select id="getFehSkillsInfo" parameterType="com.example.mysql.dto.FireemblemHeroDto" resultType="java.util.LinkedHashMap">
+        SELECT
+        main.IMG_NAME as imgName
+        , IFNULL(SKILL_WEAPON.skill_name_cn,'') AS weaponName
+        , IFNULL(SKILL_WEAPON.skill_icon,'') AS weaponIcon
+        , IFNULL(SKILL_A.skill_name_cn,'') AS skillAName
+        , IFNULL(SKILL_A.skill_icon,'') AS skillAIcon
+        , IFNULL(SKILL_B.skill_name_cn,'') AS skillBName
+        , IFNULL(SKILL_B.skill_icon,'') AS skillBIcon
+        , IFNULL(SKILL_C.skill_name_cn,'') AS skillCName
+        , IFNULL(SKILL_C.skill_icon,'') AS skillCIcon
+        , IFNULL(SKILL_SP.skill_name_cn,'') AS skillSpName
+        , IFNULL(SKILL_ASS.skill_name_cn,'') AS skillAssName
+        FROM
+            FIREEMBLEM_HERO MAIN
+        LEFT JOIN FIREEMBLEM_HERO_SKILL SKILL_A
+            ON MAIN.skill_a = SKILL_A.SKILL_CODE
+            AND SKILL_A.SKILL_CATEGORY = 'FE_SKILL_A'
+        LEFT JOIN FIREEMBLEM_HERO_SKILL SKILL_B
+            ON MAIN.skill_b = SKILL_B.SKILL_CODE
+            AND SKILL_B.SKILL_CATEGORY = 'FE_SKILL_B'
+        LEFT JOIN FIREEMBLEM_HERO_SKILL SKILL_C
+            ON MAIN.skill_c = SKILL_C.SKILL_CODE
+            AND SKILL_C.SKILL_CATEGORY = 'FE_SKILL_C'
+        LEFT JOIN FIREEMBLEM_HERO_SKILL SKILL_SP
+            ON MAIN.skill_SP = SKILL_SP.SKILL_CODE
+            AND SKILL_SP.SKILL_CATEGORY = 'FE_SKILL_SP'
+        LEFT JOIN FIREEMBLEM_HERO_SKILL SKILL_ASS
+            ON MAIN.SKILL_ASS = SKILL_ASS.SKILL_CODE
+            AND SKILL_ASS.SKILL_CATEGORY = 'FE_SKILL_ASS'
+        LEFT JOIN FIREEMBLEM_HERO_SKILL SKILL_WEAPON
+            ON MAIN.weapon = SKILL_WEAPON.SKILL_CODE
+            AND SKILL_WEAPON.SKILL_CATEGORY = 'FE_WEAPON'
+        <where>
+            1 = 1
+            <if test="name!=null and name!=''">
+                AND NAME = #{name}
+            </if>
+            <if test="nameCn!=null and nameCn!=''">
+                AND NAME_CN = #{nameCn}
+            </if>
+            <if test="nameJp!=null and nameJp!=''">
+                AND NAME_JP = #{nameJp}
+            </if>
+            <if test="imgName!=null and imgName!=''">
+                AND IMG_NAME = #{imgName}
+            </if>
+            <if test="rarity!=null and rarity!=''">
+                AND RARITY = #{rarity}
+            </if>
+            <if test="blessing!=null and blessing!=''">
+                AND BLESSING = #{blessing}
+            </if>
+            <if test="heroType!=null and heroType!=''">
+                AND HERO_TYPE = #{heroType}
+            </if>
+            <if test="moveType!=null and moveType!=''">
+                AND MOVE_TYPE = #{moveType}
+            </if>
+            <if test="weaponType!=null and weaponType!=''">
+                AND WEAPON_TYPE = #{weaponType}
+            </if>
+            <if test="entry!=null and entry!=''">
+                AND ENTRY = #{entry}
+            </if>
+            <if test="color!=null and color!=''">
+                AND COLOR = #{color}
+            </if>
+            <if test="race!=null and race!=''">
+                AND RACE = #{race}
+            </if>
+            <if test="skillA!=null and skillA!=''">
+                AND SKILL_A = #{skillA}
+            </if>
+            <if test="skillB!=null and skillB!=''">
+                AND SKILL_B = #{skillB}
+            </if>
+            <if test="skillC!=null and skillC!=''">
+                AND SKILL_C = #{skillC}
+            </if>
+            <if test="heroRank!=null and heroRank!=''">
+                AND HERO_RANK = #{heroRank}
+            </if>
+
+            <if test="condition!=null and condition!=''">
+                ${condition}
+            </if>
+        </where>
+    </select>
+</mapper>

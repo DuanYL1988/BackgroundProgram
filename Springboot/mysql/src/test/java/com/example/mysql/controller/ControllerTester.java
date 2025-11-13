@@ -1,7 +1,5 @@
 package com.example.mysql.controller;
 
-import com.example.mysql.dto.AccountDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RunWith(SpringRunner.class)
@@ -25,12 +23,12 @@ import java.util.Map;
 public class ControllerTester {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
-    private String token = "";
+    String token = "";
 
     @Before
     public void init() throws Exception {
@@ -40,15 +38,16 @@ public class ControllerTester {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        String responseContent = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
         ResponseResult response = objectMapper.readValue(responseContent,ResponseResult.class);
-        Map<String, String> resultMap = (Map<String, String>) response.getData();
+        Map<String, String> resultMap;
+        resultMap = (Map<String, String>) response.getData();
         token = resultMap.get("token");
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         System.out.println("token:"+token);
     }
 
@@ -62,21 +61,35 @@ public class ControllerTester {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        String responseContent = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
         System.out.println("响应内容：" + responseContent);
     }
 
     @Test
     public void getFehListTest() throws Exception {
         String json = "{\"nameCn\":\"琳\"}";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/fireemblem/getList")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/FIREEMBLEM_HERO/getList")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
                 .header("Authorization", token))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        String responseContent = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        System.out.println("响应内容：" + responseContent);
+    }
+
+    @Test
+    public void getFehCardTest() throws Exception {
+        String json = "{\"condition\":\"AND INSTR(HERO_TYPE, ':') > 0\"}";
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/Illustration/FIREEMBLEM_HERO")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .header("Authorization", token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
         System.out.println("响应内容：" + responseContent);
     }
 
@@ -86,7 +99,7 @@ public class ControllerTester {
                 .header("Authorization", token))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-        String responseContent = result.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        String responseContent = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
         System.out.println("响应内容：" + responseContent);
     }
 }

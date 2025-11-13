@@ -1,19 +1,5 @@
 package com.example.mysql.service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
-
 import com.example.mysql.dto.CodeMasterDto;
 import com.example.mysql.dto.TableInfoDto;
 import com.example.mysql.model.CodeMaster;
@@ -22,8 +8,15 @@ import com.example.mysql.model.TableInfo;
 import com.example.mysql.repository.CodeMasterRepository;
 import com.example.mysql.repository.ConfigrationRepository;
 import com.example.mysql.repository.TableInfoRepository;
-
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * 数据库表管理Service
@@ -45,13 +38,10 @@ public class TableInfoServiceImpl {
 
     /**
      * 取得通用的检索信息和列表表示信息
-     *
-     * @param  dto
-     * @return
      */
     public Map<String, Object> getList(String tableName) {
         // 处理结果
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         // 检索条件部
         TableInfoDto condition = new TableInfoDto();
         condition.setTableName(tableName);
@@ -85,7 +75,7 @@ public class TableInfoServiceImpl {
             code.setImgUrl(columns.getImgUrl());
             List<Code> codeList = codeMap.get(columns.getCategoryId());
             if(Objects.isNull(codeList)) {
-                codeList = new ArrayList<Code>();
+                codeList = new ArrayList<>();
             }
             codeList.add(code);
             codeMap.put(columns.getCategoryId(),codeList);
@@ -93,15 +83,12 @@ public class TableInfoServiceImpl {
 
         // 名称列表
         String query = "SELECT DISTINCT NAME_CN,NAME,NAME_JP FROM " + tableName + ";";
-        List<Code> nameList = jdbcTemplate.query(query, new Object[]{}, new RowMapper<Code>() {
-            @Override
-            public Code mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Code result = new Code();
-                result.setCategory("NAME");
-                result.setCode(rs.getString("NAME"));
-                result.setValue(rs.getString("NAME_CN")+"_"+rs.getString("NAME_JP")+"_"+rs.getString("NAME"));
-                return result;
-            }
+        List<Code> nameList = jdbcTemplate.query(query, (rs, rowNum) -> {
+            Code result1 = new Code();
+            result1.setCategory("NAME");
+            result1.setCode(rs.getString("NAME"));
+            result1.setValue(rs.getString("NAME_CN")+"_"+rs.getString("NAME_JP")+"_"+rs.getString("NAME"));
+            return result1;
         });
         codeMap.put("NAME",nameList);
         result.put("direct", codeMap);
@@ -111,23 +98,19 @@ public class TableInfoServiceImpl {
 
     /**
      * 取得表信息中的所有表名
-     * @return
      */
     public Map<String, Object> getTableList(){
         String query = "SELECT TBL1.TABLE_NAME, MST.NAME FROM (" +
                 "SELECT DISTINCT TABLE_NAME FROM TABLE_INFO) TBL1 LEFT JOIN CODE_MASTER mst " +
                 "ON TBL1.TABLE_NAME = mst.CODE AND mst.CATEGORY_ID = 'TABLE_NAME'";
-        List<Code> tableList = jdbcTemplate.query(query, new Object[]{}, new RowMapper<Code>() {
-            @Override
-            public Code mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Code result = new Code();
-                result.setCode(rs.getString("TABLE_NAME"));
-                result.setValue(rs.getString("NAME"));
-                return result;
-            }
+        List<Code> tableList = jdbcTemplate.query(query, (rs, rowNum) -> {
+            Code result = new Code();
+            result.setCode(rs.getString("TABLE_NAME"));
+            result.setValue(rs.getString("NAME"));
+            return result;
         });
         // 处理结果
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("tableList",tableList);
         return result;
     }
