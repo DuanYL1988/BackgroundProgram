@@ -19,13 +19,12 @@ LIST_URL = result[3]
 DL_PATH = result[4]
 # 结果输出路径
 OUTPUT_JSON_PATH = "D:\\Project\\htmlProject\\20_CrawlerResult\\"
-
 # 单独爬取 "海霓","Miss.Christine","露托","海沫","克洛丝"
-FILTER_NAMES = ["司霆惊蛰"]
+FILTER_NAMES = ["乌尔比安"]
 # 执行断点
-BREAK_POINT = 178
+BREAK_POINT = 152
 # 覆盖flag
-OVERWRITE_FLAG = True
+OVERWRITE_FLAG = False
 # 数据模型
 DATA_MODEL = {
     "ID" : "" # 主键
@@ -60,19 +59,34 @@ DATA_MODEL = {
 DATA_LIST = []
 # Master数据
 MASTER_DATA = {
-  'ARK-CLASS': {} # 职业
-  , 'ARK-CLASS_BRANCH': {} # 副职业
-  , 'ARK-INF': {} # 势力
-  , 'ARK-INF': {} # 出生地
-  , 'ARK-RACE': {} # 种族
+  'VOCATION': {} # 职业
+  , 'SUB_VOCATION': {} # 副职业
+  , 'INFLUENCE': {} # 势力
+  , 'BIRTH_PLACE': {} # 出生地
+  , 'RACE': {} # 种族
 }
 
-'''
-从一览取得数据集合
-'''
-def getDateList(listUrl):
+# excute
+def main():
+    try:
+        getDateList()
+    except Exception as e:
+        print("发生错误!")
+        # 更新master信息
+        DBUtil.updateCrawlerMaster(MASTER_DATA)
+        #CrawlerUtils.outputJsonCsv(OUTPUT_JSON_PATH,TABLE_NAME,DATA_LIST)
+    # 更新master信息
+    DBUtil.updateCrawlerMaster(MASTER_DATA)
+    # 关闭数据库连接
+    DBUtil.closeConnection()
+    print("End")
+
+def getDateList():
+    '''
+    从一览取得数据集合
+    '''
     # Step.1 发送请求取得DOM对象
-    listDoc = CrawlerUtils.getDomFromUrlByCondition(listUrl, "table", {"id": "CardSelectTr"}, "list.html")
+    listDoc = CrawlerUtils.getDomFromUrlByCondition(LIST_URL, "table", {"id": "CardSelectTr"}, "list.html")
 
     # Step.2 使用正则匹配
     pattern = (r'<tr class="divsort" data-param1="(?P<VOCATION>.*?)" data-param2="(?P<RARITY>.*?),.*?" data-param3=".*?" data-param4="(?P<INFLUENCE>.*?)" data-param5="(?P<TAGS>.*?)".*?'
@@ -110,10 +124,10 @@ def getDateList(listUrl):
             print(f"rest {SLEEP_TIME} second")
             time.sleep(SLEEP_TIME)
 
-'''
-取得单个详细情报
-'''
 def getDetail(data):
+    '''
+    取得单个详细情报
+    '''
     detailDoc = CrawlerUtils.getDomFromUrlByCondition(BASE_URL + data["NAME_CN"], "div", {"id": "mw-content-text"}, "detail.html")
     # 下载对象集合
     DL_FILE_LIST = []
@@ -155,8 +169,8 @@ def getDetail(data):
         elif "职业" == thEle.text:
             className = thEle.find_next_sibling().text.strip()
             data["VOCATION"] = className
-            masterData = {"CATEGORY_NAME": "职业", "NAME": className, "IMG_URL": CrawlerUtils.getSrcFromImgElement(thEle.find_next_sibling().find("img"))}
-            DBUtil.editMasterData(MASTER_DATA, "ARK-CLASS", className, masterData)
+            masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'VOCATION', 'CATEGORY_NAME': '职业', 'CODE': data["VOCATION"], 'IMG_URL': CrawlerUtils.getSrcFromImgElement(thEle.find_next_sibling().find("img"))}
+            DBUtil.editMasterData(MASTER_DATA, "VOCATION", data["VOCATION"], masterData)
         # 实装日期
         elif "实装日期" == thEle.text:
             data["RELEASE_DATE"] = CrawlerUtils.matchYMD(thEle.find_next_sibling().text,r'(\d{4})年(\d{1,2})月(\d{1,2})日')
@@ -164,8 +178,8 @@ def getDetail(data):
     branchEle = detailDoc.find("div", {"class":"operator-page-section-wrapper flex-container trans-dir-on-xs"})
     branchNm = branchEle.find("span").text.strip()
     data["SUB_VOCATION"] = branchNm
-    masterData = {"CATEGORY_NAME": "职业分支", "NAME": branchNm, "IMG_URL": CrawlerUtils.getSrcFromImgElement(branchEle.find("img")),"PARENT_ID": data["VOCATION"]}
-    DBUtil.editMasterData(MASTER_DATA, "ARK-CLASS_BRANCH", branchNm, masterData)
+    masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'SUB_VOCATION', 'CATEGORY_NAME': '职业分支', 'CODE': data["SUB_VOCATION"], 'IMG_URL': CrawlerUtils.getSrcFromImgElement(branchEle.find("img"))}
+    DBUtil.editMasterData(MASTER_DATA, "SUB_VOCATION", data["SUB_VOCATION"], masterData)
     # 生命
     trEles = detailDoc.find("table", attrs={"class": "full-width operator-basic-stat-table operator-page-section-wrapper"}).find_all("tr")
     rarityTblIndex = 4 if rarity > 3 else 3
@@ -189,30 +203,29 @@ def getDetail(data):
     data["CAPACITY"] = data["CAPACITY"][:-1]
     # 技能
     for skillDiv in detailDoc.find("div", attrs={"id": "skill"}).find_all("div", attrs={"class" : "switch-tab"}):
-        data["SKILLS"] += skillDiv.text + ","
-        data["SKILLS_ICON"] += CrawlerUtils.getSrcFromImgElement(skillDiv.find("img")) + ","
+        if skillDiv.find("img") is None:
+            skillNm = skillDiv.text.split("]")[-1].strip()
+            data["SKILLS"] += skillNm + ","
+            skillImg = detailDoc.find("img",attrs={"title":skillNm})
+            data["SKILLS_ICON"] += CrawlerUtils.getSrcFromImgElement(skillImg) + ","
+        else:
+            data["SKILLS"] += skillDiv.text + ","
+            data["SKILLS_ICON"] += CrawlerUtils.getSrcFromImgElement(skillDiv.find("img")) + ","
     data["SKILLS"] = data["SKILLS"][:-1]
     data["SKILLS_ICON"] = data["SKILLS_ICON"][:-1]
     # 是否登录DB
-    if OVERWRITE_FLAG:
-        # 判断数据是否存在
-        primaryKeys = {"ID":data["ID"]}
-        # DB登录
-        try:
-            DBUtil.doInsertOrUpdate(TABLE_NAME, data, primaryKeys)
-        except Exception as e:
-            print("DB更新发生异常:", data["NAME_CN"])    
+    primaryKeys = {"ID":data["ID"]}
+    # DB登录
+    print(CrawlerUtils.printJson(data))
+    try:
+        DBUtil.doInsertOrUpdate(TABLE_NAME, data, primaryKeys)
+    except Exception as e:
+        print("DB更新发生异常:", data["NAME_CN"])    
     # 下载图片
     for dlObj in DL_FILE_LIST:
         print(DL_PATH+data["NAME_CN"]+"\\",BASE_IMG_URL + dlObj["src"],dlObj["name"])
-        CrawlerUtils.downloadImage(DL_PATH+data["NAME_CN"]+"/",dlObj["name"],BASE_IMG_URL + dlObj["src"],False)
+        CrawlerUtils.downloadImage(DL_PATH+data["NAME_CN"]+"/",dlObj["name"],BASE_IMG_URL + dlObj["src"],False,False)
     print(DL_FILE_LIST)
 
-# excute
-getDateList(LIST_URL)
-CrawlerUtils.outputJsonCsv(OUTPUT_JSON_PATH,TABLE_NAME,DATA_LIST)
-# 更新master信息
-#DBUtil.updateCrawlerMaster(MASTER_DATA)
-# 关闭数据库连接
-DBUtil.closeConnection()
-print("End")
+if __name__ == "__main__":
+    main()

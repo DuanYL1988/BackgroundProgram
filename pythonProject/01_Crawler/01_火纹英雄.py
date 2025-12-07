@@ -1,33 +1,38 @@
 # 通用工具类
-from ast import Or
-import CrawlerUtils
-import DBUtil
+from datetime import datetime
+import argparse
 import copy
 import time
 import re
-from datetime import datetime
+import json
+import os
+import CrawlerUtils
+import DBUtil
 
 # 数据名称
 TABLE_NAME = "FIREEMBLEM_HERO"
 # 基本URL
-result = DBUtil.SearchOne("configration", "base_url,img_url,wait_time,list_url", {"table_name": TABLE_NAME})
-maxDate = datetime.strptime(DBUtil.SearchOne(TABLE_NAME, "max(RELEASE_DATE)", {})[0], "%Y-%m-%d")
-maxDate = datetime.strptime("2015-01-01", "%Y-%m-%d")
+print("==> 取得DB配置信息")
+result = DBUtil.SearchOne("configration", "base_url,img_url,wait_time,list_url,LOCAL_DIRECTORY", {"TABLE_NAME": TABLE_NAME})
 BASE_URL = result[0]
 BASE_IMG_URL = result[1]
 SLEEP_TIME = result[2]
 LIST_URL = result[3]
+LOCAL_DIRECTORY = result[4]
+# 已登录数据的最新发布时间
+maxDate = datetime.strptime(DBUtil.SearchOne(TABLE_NAME, "IFNULL(max(RELEASE_DATE), '2015-01-01')", {})[0], "%Y-%m-%d")
 # 中途开始
 BREAK_POINT = 0
-# 图片下载Flag
-DOWNLOAD_FLAG = False
 # 数据集合
 MODEL_LIST = []
 # 单独爬取 "Lyn:_Brave_Lady"
-FILTER_NAMES = ["Eir:_Life_Ascendant"]
-FILTER_NAMES = DBUtil.getColumnListByIndex("SELECT CONCAT(NAME,REPLACE(IMG_NAME,NAME,':')) AS KEYWORD FROM FIREEMBLEM_HERO WHERE HERO_TYPE LIKE 'PID_%'",0)
+FILTER_NAMES = []
+# 图片下载Flag
+DOWNLOAD_FLAG = False
 # 覆盖flag
 OVERWRITE_FLAG = False
+# 读取DB中未下载图片的数据进行下载
+DLIMG_FROM_DB = False
 # 数据模型
 DATA_MODEL = {
     "ID" : "" # 主键ID
@@ -70,8 +75,7 @@ DATA_MODEL = {
 }
 # 数据List
 DATA_LIST = []
-
-# 各种字典
+# Master数据
 CODE_MODEL = {
     "APPLICATION" : TABLE_NAME,
     "CATEGORY_ID" : "",
@@ -96,12 +100,52 @@ SkillCdModel = {
     , "SKILL_COST" : "" # 技能花费
 }
 
-"""
-方法体要写在主处理之前
-根据html结构使用合适的解析方式
-通过id,class可以特定1个可以使用dom方式解析
-"""
+# 定义映射关系
+HERO_TYPE_MAP = {
+    "Attuned": "响心",
+    "Emblem": "纹章士",
+    "Duo": "连翼",
+    "Rearmed": "魔器",
+    "Legendary": "传承",
+    "Harmonized": "双界",
+    "Mythic": "神階",
+    "Ascended": "開花"
+}
+
+def main():
+    if DLIMG_FROM_DB:
+        # 读取DB中未下载图片的数据进行下载
+        getUnDownloadData()
+    else:
+        getDateList(LIST_URL)
+    # 关闭数据库连接
+    DBUtil.closeConnection()
+    print("==> 火焰纹章英豪 爬虫结束")
+
+def getUnDownloadData():
+    '''
+    取得未下载图片的数据
+    '''
+    cnt,total,updCnt = 0, 0, 0
+    updateQuery = f"UPDATE {TABLE_NAME} SET FAVORITE = 'DownloadED' WHERE IMG_NAME IN ('TEST_UPDATE_CONDTION'"
+    for row in DBUtil.doSearchQuery(f"SELECT IMG_NAME, FACE_IMG, STAGE_IMG, CUT_IN_IMG, SPRITE_IMG, ART_IMG, NAME FROM {TABLE_NAME} WHERE FAVORITE is null"):
+        dlPath = LOCAL_DIRECTORY + row[0]
+        # 未下载且满足条件
+        if os.path.exists(dlPath) == False and row[6] in FILTER_NAMES:
+            cnt += 1
+            print(f'CNT:{cnt}/{total} , dlPath: {dlPath}')
+            downloadFehImgFromDB(row)
+            updateQuery += f",'{row[0].replace("'","''")}'"
+    # 最后更新剩余的
+    updateQuery += ")"
+    DBUtil.doExcuteQuery(updateQuery)
+
 def getDateList(listUrl):
+    """
+    方法体要写在主处理之前
+    根据html结构使用合适的解析方式
+    通过id,class可以特定1个可以使用dom方式解析
+    """
     listDoc = CrawlerUtils.getDomFromUrl(listUrl, "list.html")
     # Step.2 从一览中解析
     tableTrArr = listDoc.find_all("tr", attrs={"class": "hero-filter-element"})
@@ -162,23 +206,11 @@ def getDetail(detailUrl):
                 deleteData(data["IMG_NAME"])
                 return
             # 英雄类型(响心,魔器,...)
-            if "Attuned" in rarity:
-                data["HERO_TYPE"] = "Attuned:响心"
-            elif "Emblem" in rarity:
-                data["HERO_TYPE"] = "Emblem:纹章士"
-            elif "Duo" in rarity:
-                data["HERO_TYPE"] = "Duo:连翼"
-            elif "Rearmed" in rarity:
-                data["HERO_TYPE"] = "Rearmed:魔器"
-            elif "Legendary" in rarity:
-                data["HERO_TYPE"] = "Legendary:传承"
-            elif "Harmonized" in rarity:
-                data["HERO_TYPE"] = "Harmonized:双界"
-            elif "Mythic" in rarity:
-                data["HERO_TYPE"] = "Mythic:神階"
-            elif "Ascended" in rarity:
-                data["HERO_TYPE"] = "Ascended:開花"                
-                
+            heroTypeName = HERO_TYPE_MAP[rarity]
+            if heroTypeName is not None:
+                data["HERO_TYPE"] = rarity
+                masterData = {'APPLICATION':TABLE_NAME, 'CATEGORY_ID': 'HERO_TYPE', 'CATEGORY_NAME': '英雄类型', 'CODE': rarity, 'NAME': heroTypeName, 'IMG_URL': ''}
+                # DBUtil.editMasterData(MASTER_DATA, "HERO_TYPE", classText, masterData)
         # 实装时间
         elif "Release Date" in title  :
             data["RELEASE_DATE"] = thElement.find_next_sibling().find("time").text
@@ -303,7 +335,7 @@ def getDetail(detailUrl):
     # 下载图片
     if DOWNLOAD_FLAG:
         print("开始下载图片:" + data["IMG_NAME"])
-        DBUtil.downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":data["IMG_NAME"]})
+        downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":data["IMG_NAME"]})
     # 休息5秒
     print("rest 5 second")
     time.sleep(SLEEP_TIME)
@@ -341,10 +373,10 @@ def getWeaponSkillInfo(skillDirtMap, race):
                 skillData["SKILL_ICON"] = skillDirtMap[skillType]["SKILL_ICON"]
             DBUtil.doInsertOrUpdate(SKILL_TABLE, skillData, unionKey)
 
-'''
-取得MISC情报
-'''
 def getDetailMisc(data, detailUrl):
+    '''
+    取得MISC情报
+    '''
     # Misc
     detailMisc = CrawlerUtils.getDomFromUrlByCondition(BASE_URL + detailUrl + "/Misc", "div", {"class": "mw-parser-output"}, "detail2.html")
     # 称号
@@ -394,11 +426,11 @@ def getDetailMisc(data, detailUrl):
         # data["CUT_IN_IMG"] = "exception:" + str(len(data["CUT_IN_IMG"]))
         data["SPRITE_IMG"] = "[]"
     return
-    
-'''
-多语言取得
-'''
+
 def getLanguage(doc):
+    '''
+    多语言取得
+    '''
     langDirt = {"cn" :"", "jp": ""}
     langElement = getParentNextElementById(doc, "In_other_languages")
     # TODO
@@ -410,10 +442,10 @@ def getLanguage(doc):
         langDirt["jp"] = langElement.find("span", {"lang": "ja"}).text
     return langDirt
 
-'''
-取得图片Gallery元素群
-'''
 def getImagesFromSpanTitle(doc, SpanId):
+    '''
+    取得图片Gallery元素群
+    '''
     galleryElement = getParentNextElementById(doc, SpanId)
     imgBox = []
     if galleryElement is not None:
@@ -421,10 +453,10 @@ def getImagesFromSpanTitle(doc, SpanId):
             imgBox.append(imgElement)
     return imgBox
 
-'''
-通过Span标题取得对应的内容
-'''
 def getParentNextElementById(doc, elementId):
+    """
+    通过Span标题取得对应的内容
+    """
     spanElement = doc.find(id=elementId)
     if spanElement is None:
         spanElement = doc.find(id=f"Ally_{elementId}")
@@ -437,12 +469,10 @@ def getParentNextElementById(doc, elementId):
         print("取得Span对应下一个元素失败:", elementId)  
         return None
 
-'''
-解析的html一个元素内包含多个需要的内容时可以使用正规方式进行一次性解析
-pattern = (r'<tr class="divsort" data-param1="(?P<type>.*?)" data-param2=".*?" data-param3="(?P<sex>.*?)" data-param4="(?P<group>.*?)" '
-           r'data-param5="(?P<tag>.*?)".*?<a href="(?P<link>.*?)" title="(?P<name>.*?)".*?src="(?P<imgSrc>.*?)",*?')
-'''
 def getCodeListFromListPage(listUrl):
+    '''
+    解析的html一个元素内包含多个需要的内容时可以使用正规方式进行一次性解析
+    '''
     listDoc = CrawlerUtils.doGetText(listUrl)
     parttenStr = (r'<tr class="hero-filter-element" data-move-type="(?P<moveType>.*?)".*?data-weapon-type="(?P<weaponType>.*?)" data-weapon-props=".*?'
                   r'<td>.*?</td><td.*?</td><td.*?<img alt="(?P<entry>.*?)" src=".*?images/(?P<entryIcon>.*?).png.*?</td>'
@@ -475,22 +505,82 @@ def getCodeListFromListPage(listUrl):
     codeList = []
     for key in CODE_DIRT:
         codeList.append(CODE_DIRT[key])
-        DBUtil.doInsert("CODE_MASTER", CODE_DIRT[key])
+        DBUtil.doInsertOrUpdate("CODE_MASTER", CODE_DIRT[key],{"application": TABLE_NAME, "CATEGORY_ID": CODE_DIRT[key]["CATEGORY_ID"], "CODE": CODE_DIRT[key]["CODE"]})
 
 def deleteData(imgName):
     DBUtil.doDelete(TABLE_NAME,{"IMG_NAME":imgName})
 
-getCodeFlag = "F"
-if getCodeFlag == "True" :
-    getCodeListFromListPage(LIST_URL)
-else:
-    # 没有指定条件时,全取得
-    getDateList(LIST_URL)
+def downloadFehImgFromDB(result):
+    """
+    爬虫执行完后从DB读取数据下载图片
+    """
+    imgHost = [BASE_IMG_URL,result[0]]
+    dataModel = {
+        "faceImg": {"src": f"{BASE_IMG_URL}{result[1]}{result[0]}_Face_FC.webp", "name" : "00_face"}
+    }
+    stageImgsDirt = ["_Face.webp","_BtlFace.webp","_BtlFace_C.webp","_BtlFace_D.webp"]
+    fileNames = ["01_normal","02_attact","03_extra","04_break"]
+    editListImg(dataModel, "stage", imgHost, result[2], stageImgsDirt, fileNames)
+    cutInImgDirt = ["_BtlFace_BU.webp","_BtlFace_BU_D.webp"]
+    fileNames = ["11_cutIn_att","12_cutIn_dmg"]
+    editListImg(dataModel, "cutIn", imgHost, result[3], cutInImgDirt, fileNames)
+    spriteImgDirt = []
+    spriteSrc = []
+    print(result)
+    # 还没有cutin的时候
+    for src in json.loads(result[4]):
+        netSrc = f"{src[:5]}{result[0]}_Mini_Unit_{src[5:]}"
+        spriteSrc.append(netSrc)
+        spriteImgDirt.append(f"Mini_Unit_{src[5:]}")
+    # TODO 图片url转换后规则未解析
+    #editListImg(dataModel, "sprite", imgHost, result[4],spriteSrc, spriteImgDirt)
 
-# 下载图片
-for key in FILTER_NAMES:
-    key = key.replace(":","").replace(" ","_")
-    #DBUtil.downloadFehImgFromDB(TABLE_NAME, {"IMG_NAME":key})
+    print(CrawlerUtils.formateJSON(dataModel))
+    targetPath = LOCAL_DIRECTORY + result[0] + "\\"
+    CrawlerUtils.downloadImage(targetPath, dataModel["faceImg"]["name"], dataModel["faceImg"]["src"], False, True)
+    for imgData in dataModel["stage"]:
+        CrawlerUtils.downloadImage(targetPath, imgData["name"], imgData["src"], False, True)
+    for imgData in dataModel["cutIn"]:
+        CrawlerUtils.downloadImage(targetPath, imgData["name"], imgData["src"], False, True)
 
-# 关闭数据库连接
-DBUtil.closeConnection()
+def editListImg(dataModel, attrNm, imgHost, imgNameStr, srcMpNames, fileNames):
+    dataModel[attrNm] = [] # 初始化
+    if "[" in imgNameStr and "]" in imgNameStr:
+        imgSrcList = json.loads(imgNameStr)
+        if len(imgSrcList) > 0:
+            for index,stageSrc in enumerate(imgSrcList):
+                # 神装英雄
+                if(index > len(fileNames)-1):
+                    return
+                mpName = srcMpNames[index] if len(srcMpNames) > index else ""
+                skinIndex = index
+                skinName = ""
+                if index > 3:
+                    skinIndex = skinIndex - 4
+                    skinName = f"{fileNames[skinIndex]}(new)"
+                else:
+                    skinName = f"{fileNames[skinIndex]}"
+                dataModel[attrNm].append({
+                   "src": f"{imgHost[0]}{stageSrc}{imgHost[1]}{mpName}"
+                   , "name": skinName
+                })
+
+if __name__ == "__main__":
+    print("==> 火焰纹章英豪 爬虫开始")
+    # 解析命令行参数
+    parser = argparse.ArgumentParser(description="爬取火焰纹章英豪数据")
+    parser.add_argument("-n", "--names", default="", help="英文名,多个使用逗号分隔")
+    parser.add_argument("-dl", "--download", default="False", help="下载文件开关")
+    parser.add_argument("-db", "--databaseDL", default="False", help="下载DB中登录但未下载开关")
+    parser.add_argument("-p", "--breakpoint", default="0", help="中途开始点")
+    # 解析参数
+    arges = parser.parse_args()
+    if arges.names != "":
+        FILTER_NAMES = arges.names.split(",")
+    if arges.download.lower() == "true":
+        DOWNLOAD_FLAG = True
+    if arges.databaseDL.lower() == "true":
+        DLIMG_FROM_DB = True
+    BREAK_POINT = int(arges.breakpoint)
+    print(f"过滤名称:{FILTER_NAMES},下载图片:{DOWNLOAD_FLAG},中途开始点:{BREAK_POINT},从DB下载图片:{DLIMG_FROM_DB}")
+    main()

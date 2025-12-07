@@ -93,6 +93,13 @@ def doInsertOrUpdate(table, data, pkInfo):
     elif existFlag == 0:
         doInsert(table, data)
 
+def doInsertByKey(table, data, keyInfo):
+    existFlag = getCount(table, keyInfo)
+    if existFlag == 0:
+        doInsert(table, data)
+    else:
+        print("数据已存在,跳过插入")
+
 def doInsert(table, data):
     cursor = connection.cursor()
     query = "INSERT INTO " + table + "("
@@ -153,10 +160,8 @@ def closeConnection():
 ============= 业务性方法 =============
 '''
 
-'''
-爬虫执行完后更新master_code表
-'''
 def updateCrawlerMaster(masterDataDir):
+    ''' 爬虫执行完后更新master_code表 '''
     now = datetime.now()
     for category in masterDataDir:
         for code in masterDataDir[category]:
@@ -165,10 +170,8 @@ def updateCrawlerMaster(masterDataDir):
             data["MEMO3"] = now.strftime("%Y-%m-%d %H:%M:%S")
             doInsertOrUpdate("CODE_MASTER",data,condition)
 
-'''
-爬虫执行过程中编辑数据
-'''
 def editMasterData(FULL_MASTERDATA, category, code, editData):
+    ''' 爬虫执行过程中编辑数据 '''
     masterData = CrawlerUtils.initData(MASTER_MODEL, editData)
     for attr in editData:
         masterData[attr] = editData[attr]
@@ -177,64 +180,3 @@ def editMasterData(FULL_MASTERDATA, category, code, editData):
     else:
         FULL_MASTERDATA[category][code].update(masterData)
 
-'''
-爬虫执行完后从DB读取数据下载图片
-'''
-def downloadFehImgFromDB(tableName, condition):
-    result = SearchOne(tableName, "IMG_NAME, FACE_IMG, STAGE_IMG, CUT_IN_IMG, SPRITE_IMG, ART_IMG", condition)
-    if result is None:
-        return
-    configration = SearchOne("configration", "img_url,wait_time,LOCAL_DIRECTORY", {"table_name": tableName})
-    # 头像
-    imgHost = [configration[0],result[0]]
-    dataModel = {
-        "faceImg": {"src": f"{imgHost[0]}{result[1]}{imgHost[1]}_Face_FC.webp", "name" : "00_face"}
-    }
-    stageImgsDirt = ["_Face.webp","_BtlFace.webp","_BtlFace_C.webp","_BtlFace_D.webp"]
-    fileNames = ["01_normal","02_attact","03_extra","04_break"]
-    editListImg(dataModel, "stage", imgHost, result[2], stageImgsDirt, fileNames)
-    cutInImgDirt = ["_BtlFace_BU.webp","_BtlFace_BU_D.webp"]
-    fileNames = ["11_cutIn_att","12_cutIn_dmg"]
-    editListImg(dataModel, "cutIn", imgHost, result[3], cutInImgDirt, fileNames)
-    spriteImgDirt = []
-    spriteSrc = []
-    print(result)
-    # 还没有cutin的时候
-    for src in json.loads(result[4]):
-        netSrc = f"{src[:5]}{result[0]}_Mini_Unit_{src[5:]}"
-        spriteSrc.append(netSrc)
-        spriteImgDirt.append(f"Mini_Unit_{src[5:]}")
-    # TODO 图片url转换后规则未解析
-    #editListImg(dataModel, "sprite", imgHost, result[4],spriteSrc, spriteImgDirt)
-
-    print(CrawlerUtils.formateJSON(dataModel))
-    targetPath = configration[2] + result[0] + "\\"
-    CrawlerUtils.downloadImage(targetPath, dataModel["faceImg"]["name"], dataModel["faceImg"]["src"], False)
-    for imgData in dataModel["stage"]:
-        CrawlerUtils.downloadImage(targetPath, imgData["name"], imgData["src"], False)
-    for imgData in dataModel["cutIn"]:
-        CrawlerUtils.downloadImage(targetPath, imgData["name"], imgData["src"], False)
-
-def editListImg(dataModel, attrNm, imgHost, imgNameStr, srcMpNames, fileNames):
-    dataModel[attrNm] = [] # 初始化
-    if "[" in imgNameStr and "]" in imgNameStr:
-        imgSrcList = json.loads(imgNameStr)
-        if len(imgSrcList) > 0:
-            for index,stageSrc in enumerate(imgSrcList):
-                # 神装英雄
-                if(index > len(fileNames)-1):
-                    return
-                mpName = srcMpNames[index] if len(srcMpNames) > index else ""
-                skinIndex = index
-                skinName = ""
-                if index > 3:
-                    skinIndex = skinIndex - 4
-                    skinName = f"{fileNames[skinIndex]}(new)"
-                else:
-                    skinName = f"{fileNames[skinIndex]}"
-                dataModel[attrNm].append({
-                   "src": f"{imgHost[0]}{stageSrc}{imgHost[1]}{mpName}"
-                   , "name": skinName
-                })
-
-#downloadFehImgFromDB("FIREEMBLEM_HERO", {"NAME":"Tiki"})

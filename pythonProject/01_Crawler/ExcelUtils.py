@@ -158,4 +158,76 @@ def updateDDLFromDB():
             startRow = startRow + 1
     workbook.save(DDL_PATH)
 
-updateDDLFromDB()
+def updateTblInfoFromExcel(sheetName):
+    '''
+    将Excel中字段信息更新到DB
+    '''
+    workbook = openpyxl.load_workbook(filename=DDL_PATH, read_only=True,data_only=True)
+    targetTbl = "TABLE_INFO"
+    targetSheet = workbook[sheetName]
+    data = {}
+    for row in targetSheet.iter_rows(min_row=4,max_row=targetSheet.max_row,min_col=1,max_col=21, values_only=True):
+        startCol = 0
+        # 字段名
+        data["COL_NAME"] = row[startCol]
+        startCol += 1
+        # 字段名中文
+        data["COL_NAME_CH"] = row[startCol]
+        startCol += 1
+        # 字段驼峰
+        data["COL_CAMEL"] = row[startCol]
+        startCol += 1
+        # 字段属性
+        data["COL_TYPE"] = row[startCol]
+        startCol += 1
+        # 长度
+        data["COL_LENGTH"] = row[startCol]
+        startCol += 1
+        # 主键flag
+        data["COL_PK_FLG"] = row[startCol]
+        startCol += 1
+        # 非空flag
+        data["COL_NOTNULL_FLG"] = row[startCol]
+        startCol += 1
+        # 业务逻辑主键
+        data["COL_UNIQUE_FLG"] = row[startCol]
+        startCol += 1
+        # 输入类型
+        data["COL_INPUTTYPE"] = row[startCol]
+        startCol += 1
+        # 新建flag
+        data["COL_INSERTABLE"] = row[startCol]
+        startCol += 1
+        # 字段更新flag
+        data["COL_UPDATEABLE"] = row[startCol]
+        startCol += 1
+        # 检索条件flag
+        data["COL_FIFTERABLE"] = row[startCol]
+        startCol += 1
+        # 表示flag
+        data["COL_DISABLE_FLG"] = row[startCol]
+        startCol += 1
+        # 一览表示flag
+        data["COL_LIST_DISABLE_FLAG"] = row[startCol]
+        startCol += 1
+        # 一览宽度
+        data["COL_LIST_WIDTH"] = row[startCol]
+        startCol += 1
+        # 输入宽度
+        data["COL_INPUT_WIDTH"] = row[startCol]
+        startCol += 1
+        # 排序
+        data["COL_SORT"] = row[startCol]
+        startCol += 1
+        # 类型Code
+        data["COL_CODE"] = row[startCol]
+        startCol += 1
+        # 默认值
+        data["COL_DEFAULT"] = row[startCol]
+        print(data)
+
+        #DBUtil.doInsertOrUpdate(targetTbl,data,{"TABLE_NAME":sheetName, "COL_NAME":row[0]})
+    
+
+#updateDDLFromDB()
+updateTblInfoFromExcel("ARKNIGHTS_OPERATOR")

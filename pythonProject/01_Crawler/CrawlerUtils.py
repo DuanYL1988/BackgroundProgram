@@ -48,28 +48,25 @@ def printJson(jsonObj):
 def copyText(copyStr):
   pyperclip.copy(copyStr)
 
-''' ======= 谷歌翻译 ======== '''
 def googleTranslateEnToCn(searchWord):
-  #return googleTranslate(searchWord, 'en', "zh-cn")
-  return GoogleTranslator(source='auto', target='zh').translate(searchWord)
+  ''' ======= 谷歌翻译 ======== '''
+  return GoogleTranslator(source='en', target='zh-CN').translate(searchWord)
 
 def googleTranslate(searchWord, from_lang, to_lang):
   from_lang = 'en' if "" == from_lang else from_lang
-  to_lang = 'zh-cn' if "" == to_lang else from_lang
+  to_lang = 'zh-CN' if "" == to_lang else to_lang
   # 初始化翻译器
-  translator = Translator()
+  translator = GoogleTranslator(source=from_lang, target=to_lang)
   # 需要翻译的文本
   text = searchWord
   # 翻译文本
-  translation = translator.translate(text, src=from_lang, dest=to_lang)
-  # 显示翻译结果
-  return f'{translation.text}'
+  return translator.translate(text, src=from_lang, dest=to_lang)
 
-'''
-百度翻译
-MD 每个月有字数限制
-'''
 def baiduTransEnToCn(searchWord):
+  '''
+  百度翻译
+  MD 每个月有字数限制
+  '''
   return baiduTranslate(searchWord, "auto", "cn")
 
 def baiduTranslate(searchWord, from_lang, to_lang):
