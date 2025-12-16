@@ -2,11 +2,12 @@
 import CrawlerUtils
 import DBUtil
 import time
+import platform
 
 # 数据名称
 TABLE_NAME = "ARKNIGHTS_OPERATOR"
 # 基本URL
-result = DBUtil.SearchOne("configration", "base_url,img_url,wait_time,list_url,LOCAL_DIRECTORY", {"table_name": TABLE_NAME})
+result = DBUtil.SearchOne("configration", "base_url,img_url,wait_time,list_url,LOCAL_DIRECTORY,LINUX_DL_PATH", {"table_name": TABLE_NAME})
 # 请求路径
 BASE_URL = result[0]
 # 图片地址
@@ -16,11 +17,11 @@ SLEEP_TIME = result[2]
 # 一览列表路径
 LIST_URL = result[3]
 # 下载路径
-DL_PATH = result[4]
+DL_PATH = result[4] if platform.system() == "Windows" else result[5]
 # 结果输出路径
 OUTPUT_JSON_PATH = "D:\\Project\\htmlProject\\20_CrawlerResult\\"
-# 单独爬取 "海霓","Miss.Christine","露托","海沫","克洛丝"
-FILTER_NAMES = ["乌尔比安"]
+# 单独爬取 "海霓","Miss.Christine","露托","海沫","克洛丝","圣聆初雪"
+FILTER_NAMES = ["圣聆初雪"]
 # 执行断点
 BREAK_POINT = 152
 # 覆盖flag
@@ -223,7 +224,6 @@ def getDetail(data):
         print("DB更新发生异常:", data["NAME_CN"])    
     # 下载图片
     for dlObj in DL_FILE_LIST:
-        print(DL_PATH+data["NAME_CN"]+"\\",BASE_IMG_URL + dlObj["src"],dlObj["name"])
         CrawlerUtils.downloadImage(DL_PATH+data["NAME_CN"]+"/",dlObj["name"],BASE_IMG_URL + dlObj["src"],False,False)
     print(DL_FILE_LIST)
 

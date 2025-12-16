@@ -180,3 +180,5 @@ def editMasterData(FULL_MASTERDATA, category, code, editData):
     else:
         FULL_MASTERDATA[category][code].update(masterData)
 
+if __name__ == "__main__":
+  print("DBUtil模块测试")

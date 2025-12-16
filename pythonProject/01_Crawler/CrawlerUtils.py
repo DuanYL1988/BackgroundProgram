@@ -1,4 +1,3 @@
-# 需安装第三方库
 # pip install curl_cffi
 from curl_cffi import requests
 # 引入正则模块
@@ -16,7 +15,6 @@ import csv
 import time
 import random
 from hashlib import md5
-#
 import copy
 # 安装 googletrans 库
 # pip install googletrans==4.0.0-rc1
@@ -31,7 +29,8 @@ import pyperclip
 # 参数定义
 defEnCode = "utf-8"
 headers = {
-  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  #"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 }
 # 访问间隔
 SLEEP_TIME = 30
@@ -63,10 +62,7 @@ def googleTranslate(searchWord, from_lang, to_lang):
   return translator.translate(text, src=from_lang, dest=to_lang)
 
 def baiduTransEnToCn(searchWord):
-  '''
-  百度翻译
-  MD 每个月有字数限制
-  '''
+  ''' 百度翻译  MD 每个月有字数限制 '''
   return baiduTranslate(searchWord, "auto", "cn")
 
 def baiduTranslate(searchWord, from_lang, to_lang):
@@ -100,35 +96,28 @@ def baiduTranslate(searchWord, from_lang, to_lang):
   # 显示翻译结果
   return result["trans_result"][0]["dst"]
 
-'''
-默认编码以及参数请求 
-'''
 def doGetText(url):
+  ''' 默认编码以及参数请求 '''
   return doGetTextParam3(url, defEnCode, {})
 
-'''
-Get请求取得文本信息
-'''
 def doGetTextParam3(url, encode, params):
+  ''' Get请求取得文本信息 '''
   resp = requests.get(url, params = params, headers = headers, impersonate="chrome101", timeout=10)
   resp.encoding = encode
   text = resp.text
   resp.close()
   return text
-'''
-Get请求取得Json信息
-'''
+
 def doGetJson(url, encode, params):
+  ''' Get请求取得Json信息 '''
   resp = requests.get(url, params = params, headers = headers, impersonate="chrome101", timeout=10)
   resp.encoding = encode
   json = resp.json()
   resp.close()
   return json
 
-'''
-Post请求
-'''
 def doPost(url, encode, params):
+  ''' Post请求 '''
   resp = requests.post(url, data = params, headers = headers, impersonate="chrome101", timeout=10)
   resp.encoding = encode
   json = resp.json()
@@ -138,18 +127,19 @@ def doPost(url, encode, params):
 def transHtmlToDom(html_content):
   return BeautifulSoup(html_content, "html.parser")
 
-'''
-输出到文件
-'''
 def outputHtml(outputText, encode, fileName):
+  '''  输出到文件 '''
   with open(fileName, mode="w" , encoding=encode) as f:
     f.write(str(outputText))
   f.close()
 
-'''
-正则匹配
-'''
+def setRequetHeaders(customHeaders):
+  ''' 设置请求头 '''
+  for key in customHeaders:
+    headers[key] = customHeaders[key]  
+
 def getDataListByReg(html, patternStr):
+  ''' 正则匹配数据 '''
   # 加载正则到内存
   pattern = re.compile(patternStr, re.S)
   dataList = []
@@ -157,10 +147,8 @@ def getDataListByReg(html, patternStr):
     dataList.append(item.groupdict())
   return dataList
 
-'''
-通过url直接取得dom对象
-'''
 def getDomFromUrl(url, outputPath):
+  '''  通过url直接取得dom对象  '''
   respText = doGetText(url)
   if "" != outputPath:
     outputHtml(respText, defEnCode, outputPath)
@@ -174,21 +162,16 @@ def getDomFromUrlByCondition(url, tag, condition, outputPath):
     outputHtml(targetElement, defEnCode, outputPath)
   return targetElement
 
-'''
-通过html文字列取得dom对象
-'''
 def getDomForHtml(html):
+  ''' 通过html文字列取得dom对象'''
   return BeautifulSoup(html, "html.parser")
 
 def getXpathForHtml(html, parentXpath):
   xpathObj = etree.HTML(html)
   return xpathObj.xpath(parentXpath)
 
-'''
-输出json和csv数据文件
-'''
 def outputJsonCsv(outputPath, modalName, dataList):
-  # 输出json格式
+  ''' 输出json和csv数据文件 '''
   outputJson = "const DATA_LIST = [\n"
   # 输出CSV格式
   csvFile = open(f"{outputPath}/{modalName}.csv", mode="w", newline="", encoding=defEnCode)
@@ -201,24 +184,18 @@ def outputJsonCsv(outputPath, modalName, dataList):
   outputHtml(outputJson, defEnCode, f"{outputPath}/{modalName}.json")
   csvFile.close()
 
-'''
-写入json
-'''
 def writeLine(outputPath, modalName, jsonObj):
+  ''' 写入json '''
   with open(f"{outputPath}/{modalName}.json", mode="a", encoding=defEnCode) as file:
     file.write("    " + str(jsonObj) + ",\n")
     file.close()
 
-'''
-格式化json
-'''
 def formateJSON(data):
+  ''' 格式化json '''
   return json.dumps(data, indent=4, ensure_ascii=False)
 
-'''
-正则匹配
-'''
 def matchStr(str,partten):
+  ''' 正则匹配 '''
   match = re.match(partten, str)
   if match:
     str = ""
@@ -226,10 +203,8 @@ def matchStr(str,partten):
       str += part
   return str
 
-'''
-正则匹配:转换年月日
-'''
 def matchYMD(str,partten):
+  ''' 正则匹配:转换年月日 '''
   match = re.match(partten, str)
   if match:
     year, month, day = match.groups()
@@ -247,10 +222,8 @@ def matchWeapon(str):
   matches = "".join(re.findall(pattern, str))
   return matches
 
-'''
-下载图片
-'''
 def downloadImage(forlder, name, src, overWriteFlag, pngFlag):
+  ''' 下载图片 '''
   src = src.replace("'","")
   # 取得网络图片
   img_resp = requests.get(src, headers=headers)
@@ -265,17 +238,15 @@ def downloadImage(forlder, name, src, overWriteFlag, pngFlag):
     return
   # 没有文件夹时新建
   if not os.path.exists(forlder):
-    os.mkdir(forlder)
+    os.makedirs(forlder)
   with open(outputFileName, mode="wb") as f:
     f.write(img_resp.content)
-    print(f"download:{src.split("/")[-1]} -> {outputFileName}")
+    print(f"download:{src.split('/')[-1]} -> {outputFileName}")
     # 下载完成间隔时间
     time.sleep(2)
 
-'''
-从td中取得img的src
-'''
 def getSrcFromTd(tdElement):
+  ''' 从td中取得img的src '''
   imgElement = tdElement.find("img")
   return getSrcFromImgElement(imgElement)
 
@@ -289,88 +260,12 @@ def getSrcFromImgElement(imgElement):
   src = "/".join(full_path.split("/")[-3:])
   return src
 
-'''
-初始化对象并赋值
-'''
 def initData(dataModel, regData):
+  ''' 初始化对象并赋值 '''
   data = copy.deepcopy(dataModel)
   for attr in regData:
     data[attr] = regData[attr].strip()
   return data
 
-'''
-galleryHtml = BeautifulSoup(requests.get('https://azurlane.koumakan.jp/wiki/New_Jersey/Gallery'), "html.parser")
-for imgLink in galleryHtml.find_all("img"):
-    print(imgLink.get("src"))
-
-# 使用DOM方式爬取数据
-# 中文碧蓝航线wiki
-baseUrl = 'https://wiki.biligame.com/'
-listUrl = 'blhx/%E8%88%B0%E8%88%B9%E5%9B%BE%E9%89%B4'
-parentNode = {"tag":"div","attrs":{"id","CardSelectTr"}}
-childNode = {"tag":"div","attrs":{"class","jntj-1 divsort"}}
-baseImgHost = "https://patchwiki.biligame.com/images/blhx/thumb"
-getDataListByDom(baseUrl,listUrl,parentNode,childNode)
-'''
-
-'''
-# 使用正则方式爬取数据
-# 明日方舟
-pattern = (r'<tr class="divsort" data-param1="(?P<type>.*?)" data-param2=".*?" data-param3="(?P<sex>.*?)" data-param4="(?P<group>.*?)" '
-           r'data-param5="(?P<tag>.*?)".*?<a href="(?P<link>.*?)" title="(?P<name>.*?)".*?src="(?P<imgSrc>.*?)",*?')
-getDataListByUrl("https://wiki.biligame.com", "arknights", pattern, "https://patchwiki.biligame.com/images/arknights/thumb/")
-def getDataListByUrl(baseUrl, modalName, pattern, baseImgHost):
-  html = doGetText(baseUrl + "/arknights/%E5%B9%B2%E5%91%98%E6%95%B0%E6%8D%AE%E8%A1%A8", defEnCode, {})
-  getDataListByReg(html, pattern, baseImgHost, modalName)
-  print("输出json文件结束!")
-
-使用DOM方式解析
-def getDataListByDom(baseUrl, listUrl, parentNode, childNode):
-  # 1.将html交给BeautifulSoup进行处理,生成bs4对象
-  page = getDomForHtml(doGetText(baseUrl + listUrl,defEnCode,{})) # 指定html解析器
-  # 2.从bs对象中查找数据(find(标签,属性名),find_all)
-  parent = page.find(parentNode["tag"], parentNode["attrs"])
-  modelList = []
-  for item in parent.find_all(childNode["tag"], childNode["attrs"]):
-    model = {}
-    imgEle = item.find("img")
-    detailHtml = BeautifulSoup(doGetText(baseUrl + item.find("a").get("href"),defEnCode,{}), "html.parser")
-    model["id"] = detailHtml.find("span",id="PNN").text
-    model["name"] = imgEle.get("alt").replace("头像.jpg","")
-    model["country"] = item.get("data-param3")
-    model["rarity"] = detailHtml.find("span",id="PNrarity").text
-    model["ship"] = detailHtml.find("span",id="PNshiptype").text
-    model["releaseDate"] = detailHtml.find("table",class_="wikitable sv-general").find_all("tr")[3].find_all("td")[1].text.replace("\n","")
-    downloadImage("./azurlane",model["name"],imgEle.get("src"))
-    print(model)
-    modelList.append(model)
-    print("rest 5 second")
-    time.sleep(SLEEP_TIME)
-  outputJsonCsv("azurlane", modelList)
-
-1.字符集
-outputHtml(doGetText("https://pvp.qq.com/web201605/herolist.shtml","gbk", {}), defEnCode, "honorKing.html")
-
-3.XHR->get请求传入参数
-params = {
-  "type": "24",
-  "interval_id": "100:90",
-  "action": "",
-  "start": 0,
-  "limit": 400
-}
-outputHtml(doGetJson("https://movie.douban.com/j/chart/top_list", defEnCode, params), defEnCode, "./豆瓣电影排行.json")
-
-def getDataListByXpath(baseUrl):
-  rows = getXpathForHtml(doGetText(baseUrl), '//*[@id="mw-content-text"]/div[1]/table/tbody/tr')
-  modelList = []
-  for tr in rows :
-    if len(tr.xpath('./td[1]/a/text()')) > 0:
-      model = {} 
-      model["no"] = tr.xpath('./td[1]/a/text()')[0]
-      model["name"] = tr.xpath('./td[1]/a/@title')[0]
-      model["link"] = tr.xpath('./td[1]/a/@href')[0]
-      model["rarity"] = tr.xpath('./td[3]/text()')[0]
-      modelList.append(model)
-  print(modelList)
-'''
+if __name__ == "__main__":
+  print("CrawlerUtils模块测试")
