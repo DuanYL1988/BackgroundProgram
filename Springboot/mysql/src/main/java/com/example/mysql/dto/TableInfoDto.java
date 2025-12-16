@@ -55,13 +55,13 @@ public class TableInfoDto extends ExpandCondition {
     private String colListDisableFlag;
 
     /** 一览宽度 */
-    private String colListWidth;
+    private Integer colListWidth;
 
     /** 输入宽度 */
-    private String colInputWidth;
+    private Integer colInputWidth;
 
     /** 排序 */
-    private String colSort;
+    private Integer colSort;
 
     /** 类型Code */
     private String colCode;

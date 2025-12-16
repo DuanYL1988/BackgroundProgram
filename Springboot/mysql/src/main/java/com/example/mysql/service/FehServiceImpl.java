@@ -1,9 +1,7 @@
 package com.example.mysql.service;
 
 import com.example.mysql.dto.FireemblemHeroDto;
-import com.example.mysql.model.Configration;
 import com.example.mysql.model.FireemblemHero;
-import com.example.mysql.repository.ConfigrationRepository;
 import com.example.mysql.repository.CustomizeRepository;
 import com.example.mysql.repository.FireemblemHeroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class IllustrationServiceImpl {
+public class FehServiceImpl {
 
     @Autowired
     FireemblemHeroRepository fehDao;
-
-    @Autowired
-    ConfigrationRepository configRepository;
 
     @Autowired
     CustomizeRepository testDao;
@@ -38,12 +33,8 @@ public class IllustrationServiceImpl {
             skillDirt.put((String)row.get("imgName"), row);
         }
 
-        // 配置信息
-        Configration configInfo = configRepository.selectOneByUniqueKey("FIREEMBLEM_HERO");
-
         // 处理结果
         Map<String, Object> result = new HashMap<>();
-        result.put("config", configInfo);
         result.put("skillDirt",skillDirt);
         result.put("dataList",heroList);
         return result;

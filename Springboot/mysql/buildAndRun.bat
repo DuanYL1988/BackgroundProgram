@@ -14,9 +14,10 @@ if "%usercmd%"=="1" (
 ) else if "%usercmd%"=="2" (
 	echo 编译最新代码并运行
     start mvn clean spring-boot:run
+	start "VUE" Run.bat
 ) else if "%usercmd%"=="3" (
 	echo 打包jar
-    start mvn clean package -Dmaven.test.skip=true
+    start mvn clean package
 ) else (
 	echo 打包jar并运行
     start mvn clean package -Dmaven.test.skip=true && java -jar target/mysql-1.0-SNAPSHOT.jar

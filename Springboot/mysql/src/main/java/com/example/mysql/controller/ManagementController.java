@@ -24,9 +24,6 @@ public class ManagementController {
     TableInfoServiceImpl tableService;
 
     @Autowired
-    FireemblemHeroRepository fehDao;
-
-    @Autowired
     FgoServantRepository fgoDao;
 
     @Autowired
@@ -44,23 +41,14 @@ public class ManagementController {
     }
 
     /**
-     * 火纹一览检索Contorller
-     **/
-    @PostMapping("/FIREEMBLEM_HERO/getList")
-    public ResponseResult getFehList(@RequestBody FireemblemHeroDto dto) {
-        List<FireemblemHero> resultList = fehDao.selectByDto(dto);
-        ResponseResult result = CtrlCommon.success(resultList);
-        return result;
-    }
-
-    /**
      * FGO一览检索Contorller
      **/
     @PostMapping("/FGO_SERVANT/getList")
     public ResponseResult getFgoList(@RequestBody FgoServantDto dto) {
         List<FgoServant> resultList = fgoDao.selectByDto(dto);
-        ResponseResult result = CtrlCommon.success(resultList);
-        return result;
+        Map<String, Object> result = new HashMap<>();
+        result.put("dataList",resultList);
+        return CtrlCommon.success(result);
     }
 
     /**
@@ -69,8 +57,9 @@ public class ManagementController {
     @PostMapping("/ARKNIGHTS_OPERATOR/getList")
     public ResponseResult getArknightsList(@RequestBody ArknightsOperatorDto dto) {
         List<ArknightsOperator> resultList = arknightsDao.selectByDto(dto);
-        ResponseResult result = CtrlCommon.success(resultList);
-        return result;
+        Map<String, Object> result = new HashMap<>();
+        result.put("dataList",resultList);
+        return CtrlCommon.success(result);
     }
 
     /**
@@ -79,8 +68,9 @@ public class ManagementController {
     @PostMapping("/WUTHERING_WAVE_RESONATOR/getList")
     public ResponseResult getwutherWaveList(@RequestBody WutheringWaveResonatorDto dto) {
         List<WutheringWaveResonator> resultList = wutherWaveDao.selectByDto(dto);
-        ResponseResult result = CtrlCommon.success(resultList);
-        return result;
+        Map<String, Object> result = new HashMap<>();
+        result.put("dataList",resultList);
+        return CtrlCommon.success(result);
     }
 
 }

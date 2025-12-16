@@ -1,9 +1,12 @@
 package com.example.mysql.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.example.mysql.model.Account;
+import com.example.mysql.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +24,9 @@ public class AccountServiceImpl {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private AccountRepository accountDao;
 
     public ResponseResult doLogin(AccountDto user) {
         // AuthenticationManage进行用户认证
@@ -42,5 +48,15 @@ public class AccountServiceImpl {
             json.put("user", loginUser);
             return CtrlCommon.success(json);
         }
+    }
+
+    public ResponseResult getAccountList(){
+        AccountDto condition = new AccountDto();
+        String joinStr = "INNER JOIN MENU ON ACCOUNT.APPLICATION = MENU.APPLICATION AND ACCOUNT.ROLE_ID = MENU.COMP_GROUP";
+        condition.setJoinPart(joinStr);
+        List<Account> resultList = accountDao.selectByDto(condition);
+        Map<String, Object> json = new HashMap<>();
+        json.put("accountList", resultList);
+        return CtrlCommon.success(json);
     }
 }

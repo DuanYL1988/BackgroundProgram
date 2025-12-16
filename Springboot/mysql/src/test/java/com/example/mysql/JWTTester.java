@@ -38,9 +38,10 @@ public class JWTTester {
 
     @Test
     public void testEncodePsd() {
-        String encodePsd = JWTUtil.getEncodePsd("1");
+        String pwd = "Saber@74189632";
+        String encodePsd = JWTUtil.getEncodePsd(pwd);
         System.out.println(encodePsd);
         PasswordEncoder encoder = new BCryptPasswordEncoder();
-        Assert.assertTrue(encoder.matches("1", encodePsd));
+        Assert.assertTrue(encoder.matches(pwd, "$2a$10$mGsB7gWEozyfTg6JV.v.j.Px4mW6gDBg.qo4s/tIZMxtYdOt73mK."));
     }
 }

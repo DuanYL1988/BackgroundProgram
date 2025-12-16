@@ -3,7 +3,7 @@
 <mapper namespace="com.example.mysql.repository.AccountRepository" >
     <!-- ResultMap -->
     <resultMap id="AccountResultMap" type="com.example.mysql.model.Account" >
-        <result column="ID" property= "id" jdbcType= "INTEGER"/>
+        <result column="ID" property= "id" jdbcType= "VARCHAR"/>
         <result column="LOGIN_NAME" property= "loginName" jdbcType= "VARCHAR"/>
         <result column="USERNAME" property= "username" jdbcType= "VARCHAR"/>
         <result column="PASSWORD" property= "password" jdbcType= "VARCHAR"/>
@@ -18,17 +18,17 @@
 
     <!-- 全字段检索 -->
     <sql id="select_column_list">
-        ID
-        , LOGIN_NAME
-        , USERNAME
-        , PASSWORD
-        , ROLE_ID
-        , APPLICATION
-        , COMPANY
-        , GROUP_NAME
-        , TELPHONE
-        , FACE_LOCAL
-        , FACE_URL
+        ACCOUNT.ID
+        , ACCOUNT.LOGIN_NAME
+        , ACCOUNT.USERNAME
+        , ACCOUNT.PASSWORD
+        , ACCOUNT.ROLE_ID
+        , ACCOUNT.APPLICATION
+        , ACCOUNT.COMPANY
+        , ACCOUNT.GROUP_NAME
+        , ACCOUNT.TELPHONE
+        , ACCOUNT.FACE_LOCAL
+        , ACCOUNT.FACE_URL
     </sql>
 
     <!-- 插入数据字段 -->
@@ -58,6 +58,9 @@
     <!-- 根据条件取得件数 -->
     <select id="getCountByDto" parameterType="com.example.mysql.dto.AccountDto" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM ACCOUNT
+        <if test="joinPart!=null and joinPart!=''">
+            ${joinPart}
+        </if>
         <where>
             1 = 1
             <if test="password!=null and password!=''">
@@ -71,7 +74,7 @@
             </if>
 
             <if test="condition!=null and condition!=''">
-                ${condition}
+                AND ${condition}
             </if>
         </where>
     </select>
@@ -81,6 +84,9 @@
         SELECT
             <include refid="select_column_list"></include>
         FROM ACCOUNT
+        <if test="joinPart!=null and joinPart!=''">
+            ${joinPart}
+        </if>
         <where>
             1 = 1
             <if test="password!=null and password!=''">
@@ -94,7 +100,7 @@
             </if>
 
             <if test="condition!=null and condition!=''">
-                ${condition}
+                AND ${condition}
             </if>
         </where>
         <if test="orderBy!=null">
@@ -176,6 +182,7 @@
             LOGIN_NAME = #{loginName}
             OR USERNAME = #{username}
             OR TELPHONE = #{telphone}
+
         </where>
     </select>
 

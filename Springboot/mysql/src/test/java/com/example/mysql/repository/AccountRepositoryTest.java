@@ -14,17 +14,19 @@ import com.example.mysql.model.Account;
 class AccountRepositoryTest {
 
     @Autowired
-    AccountRepository testDao;
+    AccountRepository accountDao;
 
     @Test
     public void testFindOne() {
-        testDao.selectOneById(String.valueOf(1));
+        accountDao.selectOneById(String.valueOf(1));
     }
 
     @Test
     public void testFindByCondition() {
         AccountDto condition = new AccountDto();
-        List<Account> resultList = testDao.selectByDto(condition);
+        String joinStr = " INNER JOIN MENU ON ACCOUNT.APPLICATION = MENU.APPLICATION AND ACCOUNT.ROLE_ID = MENU.COMP_GROUP ";
+        condition.setJoinPart(joinStr);
+        List<Account> resultList = accountDao.selectByDto(condition);
         Assert.assertTrue(resultList.size() > 0);
     }
 
