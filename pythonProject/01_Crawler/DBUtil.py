@@ -129,7 +129,7 @@ def doUpdate(table, data, pkInfo):
     for column in data:
         value = data[column]
         if isinstance(value, list):
-            value = json.dumps(value, separators=(',', ':'))
+            value = json.dumps(value, separators=(',', ':'),ensure_ascii=False)
         if "" != value:
             query += column + " = %s, "
             valuesPart.append(value)

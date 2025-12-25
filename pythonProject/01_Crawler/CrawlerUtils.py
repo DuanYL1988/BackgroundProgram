@@ -29,19 +29,19 @@ import pyperclip
 # 参数定义
 defEnCode = "utf-8"
 headers = {
-  #"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  #"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 }
 # 访问间隔
 SLEEP_TIME = 30
 
 ''' ======= 输出信息相关 ======== '''
 def copyJson(jsonObj):
-  pyperclip.copy(json.dumps(jsonObj, indent=2))
+  pyperclip.copy(json.dumps(jsonObj, indent=2,ensure_ascii=False))
   print("JSON格式化并复制到剪切板!")
 
 def printJson(jsonObj):
-  jsonStr = json.dumps(jsonObj, indent=2)
+  jsonStr = json.dumps(jsonObj, indent=2,ensure_ascii=False)
   print(jsonStr)
 
 def copyText(copyStr):
@@ -100,6 +100,13 @@ def doGetText(url):
   ''' 默认编码以及参数请求 '''
   return doGetTextParam3(url, defEnCode, {})
 
+def doGetTextOutput(url, outputPath):
+  ''' Get请求取得文本信息并输出到文件 '''
+  text = doGetText(url)
+  if "" != outputPath:
+    outputHtml(text, defEnCode, outputPath)
+  return text
+
 def doGetTextParam3(url, encode, params):
   ''' Get请求取得文本信息 '''
   resp = requests.get(url, params = params, headers = headers, impersonate="chrome101", timeout=10)
@@ -129,6 +136,7 @@ def transHtmlToDom(html_content):
 
 def outputHtml(outputText, encode, fileName):
   '''  输出到文件 '''
+  print(f"输出文件:{fileName}")
   with open(fileName, mode="w" , encoding=encode) as f:
     f.write(str(outputText))
   f.close()

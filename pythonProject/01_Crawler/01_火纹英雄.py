@@ -14,7 +14,7 @@ import DBUtil
 TABLE_NAME = "FIREEMBLEM_HERO"
 # 基本URL
 print("==> 取得DB配置信息")
-result = DBUtil.SearchOne("configration", "base_url,img_url,wait_time,list_url,LOCAL_DIRECTORY,LINUX_DL_PATH", {"TABLE_NAME": TABLE_NAME})
+result = DBUtil.SearchOne("configration", "BASE_URL,IMG_URL,WAIT_TIME,LIST_URL,LOCAL_DIRECTORY,LINUX_DL_PATH", {"TABLE_NAME": TABLE_NAME})
 BASE_URL = result[0]
 BASE_IMG_URL = result[1]
 SLEEP_TIME = result[2]
